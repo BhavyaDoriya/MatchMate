@@ -14,15 +14,14 @@ public class User {
     private String user_name;
     private String password;
     private String gender;
-    private String food_preference;
+    private String dietary_choice;
     private int age;
     private String height;
 
     public User(String first_name, String last_name, String birth_date,
-                String gender_preference, Blob profile_picture, String bio,
+                String dietary_choice, Blob profile_picture, String bio,
                 String mobile_number, String email, String user_name,
-                String password, String gender, String food_preference,
-                int age, String height) {
+                String password, String gender, String food_preference, String height) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.birth_date = birth_date;
@@ -34,8 +33,7 @@ public class User {
         this.user_name = user_name;
         this.password = password;
         this.gender = gender;
-        this.food_preference = food_preference;
-        this.age = age;
+        this.dietary_choice = dietary_choice;
         this.height = height;
     }
 
@@ -128,11 +126,11 @@ public class User {
     }
 
     public String getFood_preference() {
-        return food_preference;
+        return dietary_choice;
     }
 
     public void setFood_preference(String food_preference) {
-        this.food_preference = food_preference;
+        this.dietary_choice = food_preference;
     }
 
     public int getAge() {
@@ -150,4 +148,72 @@ public class User {
     public void setHeight(String height) {
         this.height = height;
     }
+
+    static int getUserAge(String bd)
+    {
+        int year=Integer.parseInt(bd.substring(0,4));
+        int month=Integer.parseInt(bd.substring(5,7));
+        int date=Integer.parseInt(bd.substring(8,10));
+        if(year>2004||year<1925)
+        {
+            return -1;
+        } else if (month>12||month<1) {
+            return -1;
+        }
+        int possible_date=-1;
+        switch (month)
+        {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
+                possible_date=31;
+                break;
+            case 2:
+                if((year%4==0&&year%100!=0)||(year%400==0))
+                {
+                    possible_date=29;
+                }
+                else {
+                    possible_date=28;
+                }
+                break;
+            default:
+                possible_date=30;
+                break;
+        }
+        if(date<1||date>possible_date)
+        {
+            return -1;
+        }
+        int fetched_current_year=2025;//Will be fetched from db later
+        int fetched_current_month=7;
+        int fetched_current_date=16;
+        int age=-1;
+        if(fetched_current_month-month==0)
+        {
+            if(fetched_current_date-date<0)
+            {
+                age=fetched_current_year-year-1;
+            }
+            else
+            {
+                age=fetched_current_year-year;
+            }
+        }
+        else if(fetched_current_month-month<0)
+        {
+            age=fetched_current_year-year-1;
+        }
+        else
+        {
+            age=fetched_current_year-year;
+        }
+        return age;
+
+    }
+
 }

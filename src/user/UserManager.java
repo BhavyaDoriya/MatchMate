@@ -1,6 +1,7 @@
 package user;
 
 import util.DatabaseConnector;
+import util.InputUtils;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,152 +11,156 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Scanner;
+
+
 public class UserManager {
-//    private String first_name;      -->
-//    private String last_name;       -->
-//    private String birth_date;      -->
-//    private String gender_preference;-->
-//    private Blob profile_picture=null;  -->
-//    private String bio;          -->
-//    private String mobile_number; -->
-//    private String email;         -->
-//    private String user_name;
-//    private String password;
-//    private String gender;       -->
-//    private String dietary_choice;-->
-//    private int age;
-//    private String height;
-    //private String city            -->
-    //Private String state          -->
-    //private String qualification  -->
 static Scanner sc=new Scanner(System.in);
     static public void Register() {
-        System.out.println("Enter first name: ");
-        String first_name = sc.nextLine();
-
-        System.out.println("Enter last name: ");
-        String last_name = sc.nextLine();
-        String birth_date;
-        while (true)
-        {
-            System.out.println("Enter Birth date(in (YYYY-MM-DD) format): ");
-            birth_date= sc.nextLine();
-            boolean check=verifyBirthDate(birth_date);
-            if(check)
-            {
-                break;
-            }
-        }
-        String gender;
-        while (true)
-        {
-            System.out.println("Enter your gender: ");
-            gender=sc.nextLine();
-            boolean check=verifyGender(gender);
-            if(check)
-            {
-                break;
-            }
-        }
-        String gender_preferences;
-        while (true)
-        {
-            System.out.println("Enter your gender preferences: ");
-            gender_preferences=sc.nextLine();
-            boolean check=verifyGender(gender_preferences);
-            if(check)
-            {
-                break;
-            }
-        }
-        int height;
-        while(true)
-        {
-            System.out.println("Enter your height(in cm): ");
-            height= sc.nextInt();
-            if(verifyHeight(height))
-            {
-                break;
-            }
+        String first_name = InputUtils.promptUntilValid("Enter first name: ", input -> !input.trim().isEmpty());
+        String last_name = InputUtils.promptUntilValid("Enter last name: ", input -> !input.trim().isEmpty());
+        String pass = InputUtils.promptUntilValid("Enter password: ", UserManager::verifyPassword);
+        String birth_date = InputUtils.promptUntilValid("Enter birth date (YYYY-MM-DD): ", UserManager::verifyBirthDate);
+        String gender = InputUtils.promptUntilValid("Enter gender: ", UserManager::verifyGender);
+        String gender_preferences = InputUtils.promptUntilValid("Enter gender preference: ", UserManager::verifyGender);
+        int height = InputUtils.promptInt("Enter height (in cm): ", UserManager::verifyHeight);
+        String mo = InputUtils.promptUntilValid("Enter mobile number: ", UserManager::verifyMobileNumber);
+        String email = InputUtils.promptUntilValid("Enter email: ", input -> !checkEmailExists(input));
+        String city = InputUtils.promptUntilValid("Enter your city: ", input -> !input.trim().isEmpty());
+        String state = InputUtils.promptUntilValid("Enter your state: ", input -> !input.trim().isEmpty());
+        String qualification = InputUtils.promptUntilValid("Enter your qualification: ", input -> !input.trim().isEmpty());
+        String dietary_preferences = InputUtils.promptOptional("Enter your Dietary preference/[S]kip: ", "Not Mentioned");
+        while (!dietary_preferences.equals("Not Mentioned") && !verifyDietaryPreference(dietary_preferences)) {
+            System.out.println("Invalid input. Try again or enter 'S' to skip.");
+            dietary_preferences = InputUtils.promptOptional("Enter your Dietary preference/[S]kip: ", "Not Mentioned");
         }
 
-        String mo;
-        while (true)
-        {
-            System.out.println("Enter your mobile number: ");
-            mo=sc.nextLine();
-            boolean check=verifyMobileNumber(mo);
-            if(check)
-            {
-                break;
+        String bio = InputUtils.promptOptional("Enter Bio/[S]kip: ", "Not mentioned");
+
+        int age = User.getUserAge(birth_date);
+
+
+        InputStream image_stream = null;
+
+        while (true) {
+            System.out.print("Upload profile picture (Yes/S to skip): ");
+            String choice = sc.nextLine().trim();
+
+            if (choice.equalsIgnoreCase("Yes")) {
+                while (true) {
+                    System.out.print("Enter image path: ");
+                    String path = sc.nextLine().trim();
+                    try {
+                        image_stream = new FileInputStream(path);
+                        break;
+                    } catch (FileNotFoundException e) {
+                        System.out.println("Invalid file path. Try again.");
+                    }
+                }
+                break; // exit outer loop after successful image selection
+            } else if (choice.equalsIgnoreCase("S")) {
+                image_stream = null;
+                break; // skip profile picture
+            } else {
+                System.out.println("Invalid input. Please type 'Yes' to upload or 'S' to skip.");
             }
         }
-        String email;
-       while (true)
+
+
+        String username;
+        do {
+            username = generateUsername(first_name, last_name);
+        } while (username == null);
+
+        User u=new User(first_name,last_name,birth_date,age,gender,gender_preferences,
+                    height,mo,email,city,state,qualification,dietary_preferences,bio,
+                    image_stream,username,pass);
+        String sql = "INSERT INTO users (first_name, last_name, birth_date, age, gender, gender_preference, " +
+                "height, mobile_number, email, city, state, qualification, dietary_choice, " +
+                "bio, profile_picture, username, password) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            Connection conn=DatabaseConnector.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1,first_name);
+            pstmt.setString(2,last_name);
+            pstmt.setString(3,birth_date);
+            pstmt.setInt(4,age);
+            pstmt.setString(5,gender);
+            pstmt.setString(6,gender_preferences);
+            pstmt.setInt(7,height);
+            pstmt.setString(8,mo);
+            pstmt.setString(9,email);
+            pstmt.setString(10,city);
+            pstmt.setString(11,state);
+            pstmt.setString(12,qualification);
+            pstmt.setString(13,dietary_preferences);
+            pstmt.setString(14,bio);
+            pstmt.setBlob(15,image_stream);
+            pstmt.setString(16,username);
+            pstmt.setString(17,pass);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Registration successfully!");
+    }
+    public static void login()
+    {
+        try
         {
-            System.out.println("Enter your email: ");
-            email=sc.nextLine();
-            boolean check=checkEmailExists(email);
-            if(!check)
+            boolean flag= true;
+            while(flag)
             {
-                break;
+                System.out.println("Enter username:");
+                String enteredUsername= sc.next();
+                System.out.println("Enter password:");
+                String enteredPassword= sc.next();
+                PreparedStatement ps = DatabaseConnector.getConnection().prepareStatement("SELECT * FROM users WHERE username = ? AND password = ?");
+                ps.setString(1, enteredUsername);
+                ps.setString(2, enteredPassword);
+                ResultSet rs = ps.executeQuery();
+
+                if(rs.next()) {
+
+                } else {
+                    System.out.println("Please enter username or password again!!");
+                }
+
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+    static boolean verifyPassword(String pass)
+    {
+        if(pass.length()<8)
+        {
+            System.out.println("Password must be 8 characters long! ");
+            return false;
+        }
+        else
+        {
+            boolean hasSpecialChar=false;
+            for(int i=0;i<pass.length();i++)
+            {
+                if(!Character.isLetter(pass.charAt(i))&&!Character.isDigit(pass.charAt(i)))
+                {
+                    hasSpecialChar=true;
+                }
+            }
+            if(hasSpecialChar)
+            {
+                return true;
             }
             else
             {
-                System.out.println("Email already Exists");
+                System.out.println("There should be atleast one special character!");
+                return false;
             }
         }
-
-            System.out.println("Enter your city: ");
-            String city= sc.nextLine();
-            System.out.println("Enter your state : ");
-            String state= sc.nextLine();
-            System.out.println("Enter your qualification: ");
-            String qualification=sc.nextLine();
-
-            String dietary_preferences;
-       while (true)
-       {
-           System.out.println("Enter your Dietary preference/[S]kip : ");
-           dietary_preferences=sc.nextLine();
-           if(dietary_preferences.equalsIgnoreCase("s"))
-           {
-               dietary_preferences="Not Mentioned";
-               break;
-           } else if (verifyDietaryPreferences(dietary_preferences)) {
-               break;
-           }
-       }
-           System.out.println("Enter Bio/[S]kip : ");
-           String bio=sc.nextLine();
-           if(bio.equalsIgnoreCase("s"))
-           {
-               bio="Not mentioned";
-           }
-            System.out.println("Would you like to upload your profile picture(Yes/[S]kip): ");
-           String choice=sc.nextLine();
-          InputStream fis;
-           if(choice.equalsIgnoreCase("YES"))
-           {
-               while(true)
-               {
-                   try {
-                       System.out.println("Enter image path: ");
-                       String image_path=sc.nextLine();
-                        fis=new FileInputStream(image_path);
-                       break;
-
-                   } catch (FileNotFoundException e) {
-                       System.out.println("Please enter valid image path");
-                   }
-               }
-
-           }
-           else
-           {
-               fis=null;
-           }
-
     }
     static boolean verifyBirthDate(String bd)
     {
@@ -220,10 +225,7 @@ static Scanner sc=new Scanner(System.in);
             return false;
         }
     }
-    static boolean verifyGender(String gender)
-    {
-        return true;
-    }
+
     static boolean checkEmailExists(String email)
     {
         try {
@@ -238,10 +240,31 @@ static Scanner sc=new Scanner(System.in);
         }
 
     }
-    static boolean verifyDietaryPreferences(String dietaryPreference)
+    static boolean verifyGender(String gender)
     {
-        return true;
+        if(gender.equalsIgnoreCase("male")||gender.equalsIgnoreCase("female")||gender.equalsIgnoreCase("other"))
+        {
+            return true;
+        }
+        else
+        {
+            System.out.println("Invalid gender!! Please Enter again");
+            return false;
+        }
+
     }
+
+    static boolean verifyDietaryPreference(String dietaryPreference)
+    {
+        if(dietaryPreference.equalsIgnoreCase("veg")||dietaryPreference.equalsIgnoreCase("non-veg")||dietaryPreference.equalsIgnoreCase("vegan"))
+        {
+            return true;
+        }
+        else {
+            System.out.println("Invalid choice!! Please Enter again");
+            return false;
+        }
+}
     static  boolean verifyHeight(int height)
     {
         if(height>272||height<100)
@@ -252,4 +275,30 @@ static Scanner sc=new Scanner(System.in);
         return true;
     }
 
+    public static String generateUsername(String firstName, String lastName)  {
+        String prefix = "MM" + firstName.charAt(0) + lastName.charAt(0);
+        try
+        {
+            Connection con=DatabaseConnector.getConnection();
+            String query = "SELECT COUNT(*) FROM users";
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+
+            int count = 0;
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+
+            // Increment count to create the new unique username
+            int nextNumber = count + 1;
+            String username = prefix+"00"+nextNumber;
+            return username;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
 }

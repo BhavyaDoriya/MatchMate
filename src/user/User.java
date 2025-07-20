@@ -24,6 +24,7 @@ public class User {
     private String username;
     private String password;
 
+    public User(){}
     public User(String first_name, String last_name, String birth_date, int age,
                 String gender, String gender_preference, int height,
                 String mobile_number, String email, String city, String state,
@@ -192,7 +193,7 @@ public class User {
         LocalDate birthDate = LocalDate.parse(birthDateString, formatter);
         LocalDate currentDate = LocalDate.now();
 
-        if ((birthDate != null) && (currentDate != null)) {
+        if (birthDate != null) {
             return Period.between(birthDate, currentDate).getYears();
         } else {
             return 0;

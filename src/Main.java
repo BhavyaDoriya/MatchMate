@@ -73,6 +73,7 @@ public class Main {
         System.out.println("7. Update gender preferences");
         System.out.println("8. Update Gender");
         System.out.println("9. Update profile picture");
+        System.out.println("10. Update Education");
         System.out.println("10. Exit");
     }
 

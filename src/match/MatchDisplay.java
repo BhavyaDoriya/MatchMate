@@ -120,7 +120,7 @@ public class MatchDisplay {
                 }
                 else if(choice.equalsIgnoreCase("L"))
                 {
-
+                        new LikeManager().LikeUser(temp.data.getUsername());
                 }
                 else
                 {

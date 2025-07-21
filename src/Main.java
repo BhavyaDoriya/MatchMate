@@ -1,5 +1,6 @@
 import java.sql.Connection;
 
+import user.Session;
 import user.User;
 import user.UserManager;
 import util.*;
@@ -18,7 +19,6 @@ public class Main {
 //        }
 
         authAndExitHandler();
-
     }
     static void authAndExitHandler()
     {
@@ -38,6 +38,7 @@ public class Main {
                 boolean loginSuccessful=new UserManager().Login();
                 if(loginSuccessful)
                 {
+                    System.out.println(Session.getCurrentUserObject().getEmail());
                     HomePage();
                 }
                 else

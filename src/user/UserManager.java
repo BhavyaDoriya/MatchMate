@@ -133,6 +133,7 @@ static Scanner sc=new Scanner(System.in);
                 if (rs.next()) {
                     System.out.println("Login Successful");
                     Session.currentUsername = enteredUsername;
+                    Session.setCurrentUserObject();
                     return true;
                 } else {
                     System.out.println("Incorrect username or password.");

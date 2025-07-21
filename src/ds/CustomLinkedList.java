@@ -5,12 +5,12 @@ import java.util.Scanner;
 
 public class CustomLinkedList
 {
-    class Node
+    public class Node
     {
-        Node next,prev;
-        User data;
+        public Node next,prev;
+        public User data;
 
-        Node(User data)
+        public Node(User data)
         {
             this.data=data;
             next=null;
@@ -18,9 +18,9 @@ public class CustomLinkedList
         }
     }
 
-    Node first=null;
+    public Node first=null;
 
-    void insertAtFirst(User data)
+   public void insertAtFirst(User data)
     {
         Node n=new Node(data);
         if(first==null)
@@ -35,7 +35,7 @@ public class CustomLinkedList
         }
     }
 
-    void insertAtLast(User data)
+   public void insertAtLast(User data)
     {
         Node n=new Node(data);
         if(first==null)
@@ -54,7 +54,7 @@ public class CustomLinkedList
         }
     }
 
-    Node deleteAtFirst()
+   public Node deleteAtFirst()
     {
         Node returnNode=first;
         if(first==null)
@@ -78,7 +78,7 @@ public class CustomLinkedList
 
     }
 
-    Node remove(User data)
+   public Node remove(User data)
     {
         if(first==null)
         {
@@ -122,7 +122,17 @@ public class CustomLinkedList
             }
         }
     }
-
+    public User getNext(Node temp)
+    {
+        if(temp.next!=null)
+        {
+            return temp.next.data;
+        }
+        else
+        {
+            return null;
+        }
+    }
     public static void main(String[] args)
     {
         Scanner sc=new Scanner(System.in);

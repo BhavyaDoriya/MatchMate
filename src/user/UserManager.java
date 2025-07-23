@@ -133,7 +133,7 @@ static Scanner sc=new Scanner(System.in);
                 if (rs.next()) {
                     System.out.println("Login Successful");
                     Session.currentUsername = enteredUsername;
-                    Session.setCurrentUserObject();
+                    Session.setCurrentUserObject(Session.getUserObject(enteredUsername));
                     return true;
                 } else {
                     System.out.println("Incorrect username or password.");
@@ -148,7 +148,7 @@ static Scanner sc=new Scanner(System.in);
         }
     }
 
-    static boolean verifyPassword(String pass)
+    public static boolean verifyPassword(String pass)
     {
         if(pass.length()<8)
         {
@@ -223,7 +223,7 @@ static Scanner sc=new Scanner(System.in);
             }
         }
     }
-    static boolean verifyMobileNumber(String mo)
+    public static boolean verifyMobileNumber(String mo)
     {
         if(mo.length()!=10)
         {
@@ -259,7 +259,7 @@ static Scanner sc=new Scanner(System.in);
         }
 
     }
-    static boolean verifyGender(String gender)
+    public static boolean verifyGender(String gender)
     {
         if(gender.equalsIgnoreCase("male")||gender.equalsIgnoreCase("female")||gender.equalsIgnoreCase("other"))
         {

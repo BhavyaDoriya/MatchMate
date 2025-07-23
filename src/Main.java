@@ -1,9 +1,8 @@
-import java.sql.Connection;
+
 
 import user.Session;
-import user.User;
 import user.UserManager;
-import util.*;
+
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -74,7 +73,7 @@ public class Main {
         System.out.println("8. Update Gender");
         System.out.println("9. Update profile picture");
         System.out.println("10. Update Education");
-        System.out.println("10. Exit");
+        System.out.println("11. Exit");
     }
 
 

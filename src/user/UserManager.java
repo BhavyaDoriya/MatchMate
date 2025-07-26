@@ -12,139 +12,217 @@ import java.util.Scanner;
 import ExceptionHandling.*;
 
 public class UserManager {
-static Scanner sc=new Scanner(System.in);
-    public void Register() {
-        try {
-            String first_name = InputUtils.promptUntilValid("Enter first name: ", input -> !input.trim().isEmpty());
-            String last_name = InputUtils.promptUntilValid("Enter last name: ", input -> !input.trim().isEmpty());
-            String pass = InputUtils.promptUntilValid("Enter password: \n(Password must be 8 characters long and should have at least 1 special character. Spaces not allowed): ", UserManager::verifyPassword);
-            String birth_date = InputUtils.promptUntilValid("Enter birth date (YYYY-MM-DD): ", UserManager::verifyBirthDate);
-            String gender = InputUtils.promptUntilValid("Enter gender (Male/Female/Other): ", UserManager::verifyGender);
-            String gender_preferences = InputUtils.promptUntilValid("Enter gender preference (Male/Female/Other): ", UserManager::verifyGender);
-            int height = InputUtils.promptInt("Enter height (in cm): ", UserManager::verifyHeight);
-            String mo = InputUtils.promptUntilValid("Enter mobile number: ", UserManager::verifyMobileNumber);
-            String email = InputUtils.promptUntilValid("Enter email: ", input -> !checkEmailExists(input));
-            String city = InputUtils.promptUntilValid("Enter your city: ", input -> !input.trim().isEmpty());
-            String state = InputUtils.promptUntilValid("Enter your state: ", input -> !input.trim().isEmpty());
-            String qualification = InputUtils.promptUntilValid("Enter your qualification: ", input -> !input.trim().isEmpty());
+    static Scanner sc=new Scanner(System.in);
+    public void Register()
+            throws RegistrationCancelledException, SQLException
+    {
+        String first = InputUtils.promptUntilValid(
+                "Enter first name: ",
+                s -> !s.isEmpty(),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        String last = InputUtils.promptUntilValid(
+                "Enter last name: ",
+                s -> !s.isEmpty(),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        String pass = InputUtils.promptUntilValid(
+                "Enter password: ",
+                UserManager::verifyPassword,
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        String dob = InputUtils.promptUntilValid(
+                "Enter birth date (YYYY-MM-DD): ",
+                UserManager::verifyBirthDate,
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        String gender = InputUtils.promptUntilValid(
+                "Enter gender (M/F/O): ",
+                UserManager::verifyGender,
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        String pref = InputUtils.promptUntilValid(
+                "Enter gender preference (M/F/O): ",
+                UserManager::verifyGender,
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        int height = InputUtils.promptInt(
+                "Enter height in cm: ",
+                UserManager::verifyHeight,
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
 
-            String dietary_preferences = InputUtils.promptOptional("Enter your Dietary preference (veg/non-veg/vegan)/[S]kip: ", "Not Mentioned");
-            while (!dietary_preferences.equals("Not Mentioned") && !verifyDietaryPreference(dietary_preferences)) {
-                System.out.println("Invalid input. Try again or enter 'S' to skip.");
-                dietary_preferences = InputUtils.promptOptional("Enter your Dietary preference (veg/non-veg/vegan)/[S]kip: ", "Not Mentioned");
-            }
+        System.out.println("Note: Mobile must start 6–9, 10 digits");
+        String mobile = InputUtils.promptUntilValid(
+                "Enter mobile number: ",
+                UserManager::verifyMobileNumber,
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        String email = InputUtils.promptUntilValid(
+                "Enter email: ",
+                UserManager::verifyEmail,
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        String city = InputUtils.promptUntilValid(
+                "Enter city: ",
+                s -> !s.isEmpty(),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        String state = InputUtils.promptUntilValid(
+                "Enter state: ",
+                s -> !s.isEmpty(),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        String qual = InputUtils.promptUntilValid(
+                "Enter qualification: ",
+                s -> !s.isEmpty(),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
 
-            String bio = InputUtils.promptOptional("Enter Bio/[S]kip: ", "Not mentioned");
-            int age = User.getUserAge(birth_date);
-
-            InputStream image_stream = null;
-            while (true) {
-            System.out.print("Upload profile picture (Yes/[S]kip/[B]ack): ");
-                String choice = sc.nextLine().trim();
-                if (choice.equalsIgnoreCase("B"))
-                    throw new RegistrationCancelledException("Registration cancelled by user.");
-
-                if (choice.equalsIgnoreCase("Yes")) {
-                    while (true) {
-                        System.out.print("Enter image path/[B]ack: ");
-                        String path = sc.nextLine().trim();
-                        if (path.equalsIgnoreCase("B"))
-                            throw new RegistrationCancelledException("Registration cancelled by user.");
-                        try {
-                            image_stream = new FileInputStream(path);
-                            break;
-                        } catch (FileNotFoundException e) {
-                            System.out.println("Invalid file path. Try again.");
-                        }
-                    }
-                    break;
-                } else if (choice.equalsIgnoreCase("S")) {
-                    image_stream = null;
-                    break;
-                } else {
-                    System.out.println("Invalid input. Please type 'Yes' to upload or 'S' to skip or 'B' to go back.");
-                }
-            }
-
-            String username;
-            do {
-                username = generateUsername(first_name, last_name);
-            } while (username == null);
-
-            User u = new User(first_name, last_name, birth_date, age, gender, gender_preferences,
-                    height, mo, email, city, state, qualification, dietary_preferences, bio,
-                    image_stream, username, pass);
-
-            // INSERT logic as you have
-            String sql = "INSERT INTO users (first_name, last_name, birth_date, age, gender, gender_preference, " +
-                    "height, mobile_number, email, city, state, qualification, dietary_choice, " +
-                    "bio, profile_picture, username, password) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            try {
-                Connection conn = DatabaseConnector.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, first_name);
-                pstmt.setString(2, last_name);
-                pstmt.setString(3, birth_date);
-                pstmt.setInt(4, age);
-                pstmt.setString(5, gender);
-                pstmt.setString(6, gender_preferences);
-                pstmt.setInt(7, height);
-                pstmt.setString(8, mo);
-                pstmt.setString(9, email);
-                pstmt.setString(10, city);
-                pstmt.setString(11, state);
-                pstmt.setString(12, qualification);
-                pstmt.setString(13, dietary_preferences);
-                pstmt.setString(14, bio);
-                pstmt.setBlob(15, image_stream);
-                pstmt.setString(16, username);
-                pstmt.setString(17, pass);
-                pstmt.executeUpdate();
-                System.out.println("Registration successful!");
-                System.out.println("Your username is : "+username);
-                System.out.println("Your password is : "+pass);
-
-            }catch (SQLException e) {
-                System.out.println("Connection lost!");
-            }
-        }catch (RegistrationCancelledException e) {
-            System.out.println("⚠ " + e.getMessage());
+        String diet = InputUtils.promptOptional(
+                "Dietary choice (veg/non-veg/vegan)/[S]kip: ",
+                "Not Mentioned",
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+        while (!diet.equals("Not Mentioned") && !verifyDietaryPreference(diet)) {
+            System.out.println("Invalid—try again or 'S' to skip.");
+            diet = InputUtils.promptOptional(
+                    "Dietary choice (veg/non-veg/vegan)/[S]kip: ",
+                    "Not Mentioned",
+                    () -> new RegistrationCancelledException("Registration cancelled")
+            );
         }
+
+        String bio = InputUtils.promptOptional(
+                "Bio/[S]kip: ",
+                "Not mentioned",
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+
+        // profile picture
+        InputStream pic = null;
+        while (true) {
+            String choice = InputUtils.promptUntilValid(
+                    "Upload picture? Yes/[S]kip/[B]ack: ",
+                    s -> s.equalsIgnoreCase("Yes")
+                            || s.equalsIgnoreCase("S")
+                            || s.equalsIgnoreCase("B"),
+                    () -> new RegistrationCancelledException("Registration cancelled")
+            );
+            if (choice.equalsIgnoreCase("B"))
+                throw new RegistrationCancelledException("Registration cancelled");
+            if (choice.equalsIgnoreCase("S"))
+                break;
+
+            String path = InputUtils.promptUntilValid(
+                    "Enter image path/[B]ack: ",
+                    p -> {
+                        try {
+                            new FileInputStream(p).close();
+                            return true;
+                        } catch (Exception e) {
+                            System.out.println("Invalid path");
+                            return false;
+                        }
+                    },
+                    () -> new RegistrationCancelledException("Registration cancelled")
+            );
+            try
+            {
+                pic = new FileInputStream(path);
+                break;
+            } catch (FileNotFoundException e) {
+                //Will never happen
+            }
+        }
+
+        // auto‑gen username
+        String username;
+        do {
+            username = generateUsername(first, last);
+        } while (username == null);
+
+        // insert
+        String sql = """
+        INSERT INTO users 
+          (first_name,last_name,birth_date,age,gender,gender_preference,
+           height,mobile_number,email,city,state,qualification,
+           dietary_choice,bio,profile_picture,username,password)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        """;
+        try (Connection con = DatabaseConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            int idx = 1;
+            ps.setString(idx++, first);
+            ps.setString(idx++, last);
+            ps.setString(idx++, dob);
+            ps.setInt   (idx++, User.getUserAge(dob));
+            ps.setString(idx++, gender);
+            ps.setString(idx++, pref);
+            ps.setInt   (idx++, height);
+            ps.setString(idx++, mobile);
+            ps.setString(idx++, email);
+            ps.setString(idx++, city);
+            ps.setString(idx++, state);
+            ps.setString(idx++, qual);
+            ps.setString(idx++, diet);
+            ps.setString(idx++, bio);
+            ps.setBlob  (idx++, pic);
+            ps.setString(idx++, username);
+            ps.setString(idx,   pass);
+            ps.executeUpdate();
+        }
+
+        System.out.println("Registration successful!");
+        System.out.println("Your username: " + username);
     }
 
-    public boolean Login() {
-        try {
-            while (true) {
-                System.out.println("Enter username (or type 'Q' to quit):");
-                String enteredUsername = sc.nextLine().trim();
-                if (enteredUsername.equalsIgnoreCase("Q")) return false;
+    public boolean Login() throws LoginCancelledException, SQLException {
+        while (true) {
+            // prompt for username (or B to cancel)
+            String enteredUsername = InputUtils.promptUntilValid(
+                    "Enter username: ",
+                    s -> !s.isEmpty(),
+                    () -> new LoginCancelledException("Login cancelled by user.")
+            );
 
-                System.out.println("Enter password (or type 'Q' to quit):");
-                String enteredPassword = sc.nextLine().trim();
-                if (enteredPassword.equalsIgnoreCase("Q")) return false;
+            // prompt for password (or B to cancel)
+            String enteredPassword = InputUtils.promptUntilValid(
+                    "Enter password: ",
+                    s -> !s.isEmpty(),
+                    () -> new LoginCancelledException("Login cancelled by user.")
+            );
 
-                PreparedStatement ps = DatabaseConnector.getConnection().prepareStatement(
-                        "SELECT * FROM users WHERE username = ? AND password = ?");
+            // try authenticating
+            String sql = "SELECT 1 FROM users WHERE username = ? AND password = ?";
+            try (Connection con = DatabaseConnector.getConnection();
+                 PreparedStatement ps = con.prepareStatement(sql)) {
+
                 ps.setString(1, enteredUsername);
                 ps.setString(2, enteredPassword);
-                ResultSet rs = ps.executeQuery();
 
-                if (rs.next()) {
-                    System.out.println("Login Successful");
-                    Session.currentUsername = enteredUsername;
-                    Session.setCurrentUserObject(Session.getUserObject(enteredUsername));
-                    return true;
-                } else {
-                    System.out.println("Incorrect username or password.");
-                    System.out.println("Press Q to Quit / C to try again: ");
-                    String choice = sc.nextLine().trim();
-                    if (choice.equalsIgnoreCase("Q")) return false;
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        // successful login
+                        System.out.println("Login Successful");
+                        Session.setCurrentUsername(enteredUsername);
+                        Session.setCurrentUserObject(Session.getUserObject(enteredUsername));
+                        return true;
+                    }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+
+            // wrong credentials — ask whether to retry or back out
+            String retry = InputUtils.promptUntilValid(
+                    "Incorrect username or password. [C]ontinue / [B]ack: ",
+                    s -> s.equalsIgnoreCase("C") || s.equalsIgnoreCase("B"),
+                    () -> new LoginCancelledException("Login cancelled by user.")
+            );
+            if (retry.equalsIgnoreCase("B")) {
+                throw new LoginCancelledException("Login cancelled by user.");
+            }
+            // else loop and prompt again
         }
     }
 
@@ -200,24 +278,25 @@ static Scanner sc=new Scanner(System.in);
             {
                 for(int i=0;i<bd.length();i++)
                 {
-                    if(Character.isDigit(bd.charAt(i))||bd.charAt(i)=='-')
+                    if(Character.isDigit(bd.charAt(i))||(bd.charAt(i)=='-'&&(i==4||i==7)))
                     {
 
                     }
                     else
                     {
+                        System.out.println("Invalid birth-date format");
                         return false;
                     }
                 }
 
                 int age=User.getUserAge(bd);
-                if(age!=-1&&age<122)
+                if(age>=21 && age<122)
                 {
                     return true;
                 }
                 else
                 {
-                    System.out.println("Invalid birth-date");
+                    System.out.println("Invalid birth-date/You must be 21 years old or older");
                     return false;
                 }
             }
@@ -245,7 +324,7 @@ static Scanner sc=new Scanner(System.in);
         }
     }
 
-    static boolean checkEmailExists(String email)
+    public static boolean checkEmailExists(String email)
     {
         try {
             Connection conn= DatabaseConnector.getConnection();
@@ -258,6 +337,35 @@ static Scanner sc=new Scanner(System.in);
             return false;
         }
 
+    }
+    public static boolean verifyEmail(String email)
+    {
+        boolean isEmailFormatValid=false;
+        for(int i=0;i<email.length();i++)
+        {
+            if(email.charAt(i)=='@')
+            {
+                isEmailFormatValid=true;
+                break;
+            }
+        }
+        if(isEmailFormatValid)
+        {
+            boolean emailExist=checkEmailExists(email);
+            if(emailExist)
+            {
+                System.out.println("This E-mail already exists!");
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else {
+            System.out.println("Invalid E-mail format!");
+            return false;
+        }
     }
     public static boolean verifyGender(String gender)
     {
@@ -310,8 +418,7 @@ static Scanner sc=new Scanner(System.in);
 
             // Increment count to create the new unique username
             int nextNumber = count + 1;
-            String username = prefix+"00"+nextNumber;
-            return username;
+            return prefix+"00"+nextNumber;
         }
         catch (Exception e)
         {
@@ -319,5 +426,15 @@ static Scanner sc=new Scanner(System.in);
             return null;
         }
 
+    }
+    public void deleteAccount() throws SQLException
+    {
+        String username=Session.getCurrentUsername();
+        String query="DELETE from users where username=?";
+        PreparedStatement pst=DatabaseConnector.getConnection().prepareStatement(query);
+        pst.setString(1,username);
+        pst.executeUpdate();
+        Session.setCurrentUserObject(null);
+        Session.setCurrentUsername(null);
     }
 }

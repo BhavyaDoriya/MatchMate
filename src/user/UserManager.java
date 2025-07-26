@@ -22,8 +22,9 @@ static Scanner sc=new Scanner(System.in);
             String gender = InputUtils.promptUntilValid("Enter gender (Male/Female/Other): ", UserManager::verifyGender);
             String gender_preferences = InputUtils.promptUntilValid("Enter gender preference (Male/Female/Other): ", UserManager::verifyGender);
             int height = InputUtils.promptInt("Enter height (in cm): ", UserManager::verifyHeight);
+            System.out.println("Note : Mobile Number should start with any of the following 6,7,8,9 digits,it should only contain 10 digits,No alphabets,No special character!");
             String mo = InputUtils.promptUntilValid("Enter mobile number: ", UserManager::verifyMobileNumber);
-            String email = InputUtils.promptUntilValid("Enter email: ", input -> !checkEmailExists(input));
+            String email = InputUtils.promptUntilValid("Enter email: ", UserManager::verifyEmail);
             String city = InputUtils.promptUntilValid("Enter your city: ", input -> !input.trim().isEmpty());
             String state = InputUtils.promptUntilValid("Enter your state: ", input -> !input.trim().isEmpty());
             String qualification = InputUtils.promptUntilValid("Enter your qualification: ", input -> !input.trim().isEmpty());
@@ -71,11 +72,7 @@ static Scanner sc=new Scanner(System.in);
                 username = generateUsername(first_name, last_name);
             } while (username == null);
 
-            User u = new User(first_name, last_name, birth_date, age, gender, gender_preferences,
-                    height, mo, email, city, state, qualification, dietary_preferences, bio,
-                    image_stream, username, pass);
 
-            // INSERT logic as you have
             String sql = "INSERT INTO users (first_name, last_name, birth_date, age, gender, gender_preference, " +
                     "height, mobile_number, email, city, state, qualification, dietary_choice, " +
                     "bio, profile_picture, username, password) " +
@@ -116,13 +113,13 @@ static Scanner sc=new Scanner(System.in);
     public boolean Login() {
         try {
             while (true) {
-                System.out.println("Enter username (or type 'Q' to quit):");
+                System.out.println("Enter username :");
                 String enteredUsername = sc.nextLine().trim();
-                if (enteredUsername.equalsIgnoreCase("Q")) return false;
+                if (enteredUsername.equalsIgnoreCase("B")) return false;
 
-                System.out.println("Enter password (or type 'Q' to quit):");
+                System.out.println("Enter password :");
                 String enteredPassword = sc.nextLine().trim();
-                if (enteredPassword.equalsIgnoreCase("Q")) return false;
+                if (enteredPassword.equalsIgnoreCase("B")) return false;
 
                 PreparedStatement ps = DatabaseConnector.getConnection().prepareStatement(
                         "SELECT * FROM users WHERE username = ? AND password = ?");
@@ -132,14 +129,14 @@ static Scanner sc=new Scanner(System.in);
 
                 if (rs.next()) {
                     System.out.println("Login Successful");
-                    Session.currentUsername = enteredUsername;
+                    Session.setCurrentUsername(enteredUsername);
                     Session.setCurrentUserObject(Session.getUserObject(enteredUsername));
                     return true;
                 } else {
                     System.out.println("Incorrect username or password.");
-                    System.out.println("Press Q to Quit / C to try again: ");
+                    System.out.println("Press B to go back/ Press anything to try again: ");
                     String choice = sc.nextLine().trim();
-                    if (choice.equalsIgnoreCase("Q")) return false;
+                    if (choice.equalsIgnoreCase("B")) return false;
                 }
             }
         } catch (Exception e) {
@@ -200,24 +197,25 @@ static Scanner sc=new Scanner(System.in);
             {
                 for(int i=0;i<bd.length();i++)
                 {
-                    if(Character.isDigit(bd.charAt(i))||bd.charAt(i)=='-')
+                    if(Character.isDigit(bd.charAt(i))||(bd.charAt(i)=='-'&&(i==4||i==7)))
                     {
 
                     }
                     else
                     {
+                        System.out.println("Invalid birth-date format");
                         return false;
                     }
                 }
 
                 int age=User.getUserAge(bd);
-                if(age!=-1&&age<122)
+                if(age>=21 && age<122)
                 {
                     return true;
                 }
                 else
                 {
-                    System.out.println("Invalid birth-date");
+                    System.out.println("Invalid birth-date/You must be 21 years old or older");
                     return false;
                 }
             }
@@ -245,7 +243,7 @@ static Scanner sc=new Scanner(System.in);
         }
     }
 
-    static boolean checkEmailExists(String email)
+    public static boolean checkEmailExists(String email)
     {
         try {
             Connection conn= DatabaseConnector.getConnection();
@@ -258,6 +256,35 @@ static Scanner sc=new Scanner(System.in);
             return false;
         }
 
+    }
+    public static boolean verifyEmail(String email)
+    {
+        boolean isEmailFormatValid=false;
+        for(int i=0;i<email.length();i++)
+        {
+            if(email.charAt(i)=='@')
+            {
+                isEmailFormatValid=true;
+                break;
+            }
+        }
+        if(isEmailFormatValid)
+        {
+            boolean emailExist=checkEmailExists(email);
+            if(emailExist)
+            {
+                System.out.println("This E-mail already exists!");
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else {
+            System.out.println("Invalid E-mail format!");
+            return false;
+        }
     }
     public static boolean verifyGender(String gender)
     {
@@ -310,8 +337,7 @@ static Scanner sc=new Scanner(System.in);
 
             // Increment count to create the new unique username
             int nextNumber = count + 1;
-            String username = prefix+"00"+nextNumber;
-            return username;
+            return prefix+"00"+nextNumber;
         }
         catch (Exception e)
         {

@@ -1,5 +1,6 @@
 
 
+import ExceptionHandling.DeletionCancelledException;
 import ExceptionHandling.LoginCancelledException;
 import ExceptionHandling.RegistrationCancelledException;
 import match.MatchDisplay;
@@ -7,10 +8,12 @@ import match.MatchEngine;
 import user.Session;
 import user.UpdateUser;
 import user.UserManager;
+import util.InputUtils;
 
 
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.logging.SocketHandler;
 
 public class Main {
     static Scanner sc=new Scanner(System.in);
@@ -45,6 +48,7 @@ public class Main {
                 catch(SQLException e) {
                     System.out.println("Connection lost!");
                     System.out.println("Try again!");
+                    e.printStackTrace();
                 }
                 authAndExitHandler();
                 break;
@@ -60,6 +64,8 @@ public class Main {
                 catch (SQLException e) {
                     System.out.println("Connection lost!");
                     System.out.println("Try again!");
+                    System.out.println("Returning to Login/Register page!");
+                    authAndExitHandler();
                 }
                 if(loginSuccessful)
                 {
@@ -68,6 +74,10 @@ public class Main {
                 break;
             case 3:
                 break;
+            default:
+                System.out.println("Invalid choice try again!");
+                authAndExitHandler();
+                break;
         }
 
 
@@ -75,9 +85,6 @@ public class Main {
     static void HomePage()
     {
 
-        boolean condition= true;
-        while(condition)
-        {
             System.out.println();
             System.out.println("1. Edit Profile");
             System.out.println("2. Find Matches");
@@ -112,35 +119,42 @@ public class Main {
                     break;
                 case 6:
                     sc.nextLine();
-                    System.out.println("Are you sure that you want to delete your account?(Yes/No) ");
-                    String choiceYesNo= sc.nextLine();
-                    if(choiceYesNo.equalsIgnoreCase("yes"))
+                    System.out.println("Are you sure that you want to delete your account?(Yes/No)");
+                    try
                     {
-                        try {
-                            new UserManager().deleteAccount();
-                            System.out.println("Account deleted successfully!");
-                            System.out.println("User logged out of account!");
-                            System.out.println("Back to Login/Register page : ");
-                            authAndExitHandler();
-                        } catch (SQLException e) {
-                            System.out.println("Connection lost!");
-                            System.out.println("Deletion failed!");
-                            HomePage();
-                        }
+                        String choiceYesNo= InputUtils.promptUntilValid("Are you sure that you want to delete your account?(Yes/No) ",
+                                s->s.equalsIgnoreCase("yes"),
+                                ()->new DeletionCancelledException("Deletion Cancelled by User"));
+                        new UserManager().deleteAccount();
+                        System.out.println("Account deleted successfully!");
+                        System.out.println("User logged out of account!");
+                        System.out.println("Back to Login/Register page : ");
+                        authAndExitHandler();
                     }
-                    else if(choiceYesNo.equalsIgnoreCase("No"))
+                    catch (DeletionCancelledException e)
                     {
-                        System.out.println("Deletion cancelled by user!");
+                        System.out.println(e.getMessage());
+                        System.out.println("Returning to Home Page!");
+                        HomePage();
+                    } catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        e.printStackTrace();
+                        System.out.println("Returning to Home Page!");
                         HomePage();
                     }
                     break;
                 case 7:
-                    condition= false;
                     Session.setCurrentUsername(null);
-                    Session.getUserObject(null);
+                    Session.setCurrentUserObject(null);
+                    System.out.println("Logged out successfully");
+                    System.out.println("Back to Login/Register page !");
                     authAndExitHandler();
                     break;
-
+                default:
+                    System.out.println("Invalid choice! Try again!");
+                    HomePage();
+                    break;
             }
         }
     }
@@ -148,5 +162,5 @@ public class Main {
 
 
 
-}
+
 //C:\Users\BHAVYA\Downloads\Anupammittal.jpg

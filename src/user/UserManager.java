@@ -37,12 +37,12 @@ public class UserManager {
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
         String gender = InputUtils.promptUntilValid(
-                "Enter gender (M/F/O): ",
+                "Enter gender (Male/Female/Other): ",
                 UserManager::verifyGender,
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
         String pref = InputUtils.promptUntilValid(
-                "Enter gender preference (M/F/O): ",
+                "Enter gender preference (Male/Female/Other): ",
                 UserManager::verifyGender,
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
@@ -148,7 +148,7 @@ public class UserManager {
           (first_name,last_name,birth_date,age,gender,gender_preference,
            height,mobile_number,email,city,state,qualification,
            dietary_choice,bio,profile_picture,username,password)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         """;
         try (Connection con = DatabaseConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -334,6 +334,7 @@ public class UserManager {
             ResultSet rs=pst.executeQuery();
             return rs.next();
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
 

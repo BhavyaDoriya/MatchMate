@@ -1,6 +1,7 @@
 
 
 import ExceptionHandling.DeletionCancelledException;
+import ExceptionHandling.GoBackException;
 import ExceptionHandling.LoginCancelledException;
 import ExceptionHandling.RegistrationCancelledException;
 import match.MatchDisplay;
@@ -96,26 +97,48 @@ public class Main {
                     HomePage();
                     break;
                 case 2:
-                    new MatchDisplay().displayMatches();
+                    try {
+                        new MatchDisplay().displayMatches();
+                    } catch (GoBackException e) {
+                        new MatchDisplay().displayMatches();
+                    } catch (RuntimeException e) {
+
+                    }
                     HomePage();
                     break;
                 case 3:
-                    new MatchDisplay().displayShortlisted();
+                    try {
+                        new MatchDisplay().displayShortlisted();
+                    } catch (GoBackException e) {
+                        new MatchDisplay().displayMatches();
+                    } catch (RuntimeException e) {
+
+                    }
                     HomePage();
                     break;
                 case 4:
-                    new MatchDisplay().displayMutualLikes();
-                    HomePage();
+                    try {
+                        new MatchDisplay().displayMutualLikes();
+                    } catch (GoBackException e) {
+                        new MatchDisplay().displayMatches();
+                    } catch (RuntimeException e) {
+
+                    }                    HomePage();
                     break;
                 case 5:
-                    new MatchDisplay().displayWhoLikedMe();
-                    HomePage();
+                    try {
+                        new MatchDisplay().displayWhoLikedMe();
+                    } catch (GoBackException e) {
+                        new MatchDisplay().displayMatches();
+                    } catch (RuntimeException e) {
+
+                    }                    HomePage();
                     break;
                 case 6:
                     sc.nextLine();
                     try
                     {
-                        String choiceYesNo= InputUtils.promptUntilValid("Are you sure that you want to delete your account?(Yes/No) ",
+                        String choiceYesNo= InputUtils.promptUntilValid("Are you sure that you want to delete your account?(Yes/B(for No)) ",
                                 s->s.equalsIgnoreCase("yes"),
                                 ()->new DeletionCancelledException("Deletion Cancelled by User"));
                         new UserManager().deleteAccount();

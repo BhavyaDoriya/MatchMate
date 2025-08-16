@@ -21,7 +21,7 @@ public class InputUtils {
         while (true) {
             System.out.print(prompt);
             String input = sc.nextLine().trim();
-            if (input.equalsIgnoreCase("B")||input.equalsIgnoreCase("No")) {
+            if (input.equalsIgnoreCase("B")) {
                 throw cancelException.get();
             }
             if (validator.test(input)) {

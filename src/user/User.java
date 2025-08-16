@@ -188,7 +188,6 @@ public class User {
 
 
     public static int getUserAge(String birthDateString) {
-        // Example: birthDateString = "2004-05-01"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate birthDate = LocalDate.parse(birthDateString, formatter);
         LocalDate currentDate = LocalDate.now();

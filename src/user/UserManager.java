@@ -306,7 +306,7 @@ public class UserManager {
                 }
 
                 int age=User.getUserAge(bd);
-                if(age>=21 && age<122)
+                if(verifyAge(age))
                 {
                     return true;
                 }
@@ -316,6 +316,17 @@ public class UserManager {
                     return false;
                 }
             }
+        }
+    }
+    public static boolean verifyAge(int age)
+    {
+        if(age>=21&&age<=100)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
     public static boolean verifyMobileNumber(String mo)

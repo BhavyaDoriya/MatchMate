@@ -1,7 +1,6 @@
 package user;
-import util.DatabaseConnector;
-import util.EmailOTP;
-import util.InputUtils;
+import util.*;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -11,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 import ExceptionHandling.*;
-import util.OTPGenerator;
 
 public class UserManager {
     static Scanner sc=new Scanner(System.in);
@@ -190,25 +188,120 @@ public class UserManager {
             ps.executeUpdate();
         }
 
+        System.out.println("\nAnswer a few compatibility questions!");
+
+// traveling
+        String q1 = InputUtils.promptUntilValid(
+                "Do you like traveling? (Yes/No): ",
+                s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+
+// morning person
+        String q2 = InputUtils.promptUntilValid(
+                "Are you a morning person? (Yes/No): ",
+                s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+
+// sports
+        String q3 = InputUtils.promptUntilValid(
+                "Do you enjoy watching sports? (Yes/No): ",
+                s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+
+// pets
+        String q4 = InputUtils.promptUntilValid(
+                "Do you like pets? (Yes/No): ",
+                s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+
+// books
+        String q5 = InputUtils.promptUntilValid(
+                "Do you enjoy reading books? (Yes/No): ",
+                s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+
+// city vs countryside
+        String q6 = InputUtils.promptUntilValid(
+                "Would you prefer city life or countryside life? (City/Countryside): ",
+                s -> s.equalsIgnoreCase("City") || s.equalsIgnoreCase("Countryside"),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+
+// insert into compatibility table
+        String compSql = """
+INSERT INTO compatibility(username, travel, morning_person, sports, pets, books, lifestyle)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+""";
+        try (Connection con = DatabaseConnector.getConnection();
+             PreparedStatement ps = con.prepareStatement(compSql)) {
+            ps.setString(1, username);
+            ps.setString(2, q1);
+            ps.setString(3, q2);
+            ps.setString(4, q3);
+            ps.setString(5, q4);
+            ps.setString(6, q5);
+            ps.setString(7, q6);
+            ps.executeUpdate();
+        }
+
         System.out.println("Registration successful!");
         System.out.println("Your username: " + username);
+        String profileDetails =
+                "Hi " + first + ",\n\n" +
+                        "Your registration is successful! Here are your profile details:\n\n" +
+                        "Username: " + username + "\n" +
+                        "Name: " + first + " " + last + "\n" +
+                        "Birth Date: " + dob + "\n" +
+                        "Age: " + User.getUserAge(dob) + " years\n" +
+                        "Height: " + height + " cm\n" +
+                        "Gender: " + gender + "\n" +
+                        "Preferences: " + pref + "\n" +
+                        "Dietary Choice: " + diet + "\n" +
+                        "City: " + city + "\n" +
+                        "State: " + state + "\n" +
+                        "Bio: " + bio + "\n\n" +
+                        "Start finding your matches today!";
+
+// send welcome email with profile summary
+        EmailUtil.sendMail(
+                email,
+                "Welcome to MatchMate ❤️",
+                profileDetails
+        );
     }
 
     public boolean Login() throws LoginCancelledException, SQLException {
         while (true) {
-            // prompt for username (or B to cancel)
+            // prompt for username (or U for forgot username / B to cancel)
             String enteredUsername = InputUtils.promptUntilValid(
-                    "Enter username: ",
+                    "Enter username (or U if you forgot username): ",
                     s -> !s.isEmpty(),
                     () -> new LoginCancelledException("Login cancelled by user.")
             );
 
-            // prompt for password (or B to cancel)
+            // if user typed U → run forgot username flow
+            if (enteredUsername.equalsIgnoreCase("U")) {
+                new EmailOTP().forgotUsername();  // call OTP-based method
+                continue; // after showing username, restart login
+            }
+
+            // prompt for password (or F for forgot password / B to cancel)
             String enteredPassword = InputUtils.promptUntilValid(
-                    "Enter password: ",
+                    "Enter password (or F if you forgot password): ",
                     s -> !s.isEmpty(),
                     () -> new LoginCancelledException("Login cancelled by user.")
             );
+
+            // if user typed F → run forgot password flow
+            if (enteredPassword.equalsIgnoreCase("F")) {
+                new EmailOTP().forgotPassword();  // call OTP-based method
+                continue; // after reset, restart login
+            }
 
             // try authenticating
             String sql = "SELECT 1 FROM users WHERE username = ? AND password = ?";
@@ -241,6 +334,7 @@ public class UserManager {
             // else loop and prompt again
         }
     }
+
 
     public static boolean verifyPassword(String pass)
     {

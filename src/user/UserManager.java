@@ -1,5 +1,6 @@
 package user;
 import util.DatabaseConnector;
+import util.EmailOTP;
 import util.InputUtils;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 import ExceptionHandling.*;
+import util.OTPGenerator;
 
 public class UserManager {
     static Scanner sc=new Scanner(System.in);
@@ -58,11 +60,25 @@ public class UserManager {
                 UserManager::verifyMobileNumber,
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
+
         String email = InputUtils.promptUntilValid(
                 "Enter email: ",
                 UserManager::verifyEmail,
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
+        String otp = OTPGenerator.generateOTP(6);
+        boolean sent = EmailOTP.sendOTP(email, otp);
+        if (!sent) {
+            System.out.println("Failed to send OTP to email. Try again later.");
+            return;
+        }
+
+        String userOTPInput = InputUtils.promptUntilValid(
+                "Enter the OTP sent to your email: ",
+                s -> s.equals(otp),
+                () -> new RegistrationCancelledException("Registration cancelled")
+        );
+
         String city = InputUtils.promptUntilValid(
                 "Enter city: ",
                 s -> !s.isEmpty(),

@@ -19,12 +19,6 @@ public class Main {
     static Scanner sc=new Scanner(System.in);
 
     public static void main(String[] args) throws SQLException {
-//        Connection con=DatabaseConnector.getConnection();
-//        if(con!=null)
-//        {
-//            System.out.println("Connected");
-//        }
-
         authAndExitHandler();
     }
     static void authAndExitHandler()
@@ -119,7 +113,6 @@ public class Main {
                     break;
                 case 6:
                     sc.nextLine();
-                    System.out.println("Are you sure that you want to delete your account?(Yes/No)");
                     try
                     {
                         String choiceYesNo= InputUtils.promptUntilValid("Are you sure that you want to delete your account?(Yes/No) ",

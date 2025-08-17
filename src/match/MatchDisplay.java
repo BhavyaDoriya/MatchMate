@@ -3,10 +3,15 @@ import ExceptionHandling.GoBackException;
 import ExceptionHandling.RegistrationCancelledException;
 import ds.*;
 import org.w3c.dom.Node;
+import user.Session;
+import util.DatabaseConnector;
 import util.InputUtils;
 
 import java.awt.*;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Scanner;
 
 
@@ -74,6 +79,8 @@ public class MatchDisplay {
                     System.out.println("City                : "+temp.data.getCity());
                     System.out.println("State               : "+temp.data.getState());
                     System.out.println("Bio                 : "+temp.data.getBio());
+                    double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
+                    System.out.println("Compatibility Score : " + compatibility + "%");
                     System.out.println();
 
                     while(true)
@@ -255,6 +262,8 @@ public class MatchDisplay {
                 System.out.println("City                : "+temp.data.getCity());
                 System.out.println("State               : "+temp.data.getState());
                 System.out.println("Bio                 : "+temp.data.getBio());
+                double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
+                System.out.println("Compatibility Score : " + compatibility + "%");
                 System.out.println();
 
                 while(true)
@@ -432,6 +441,8 @@ public class MatchDisplay {
                 System.out.println("City                : "+temp.data.getCity());
                 System.out.println("State               : "+temp.data.getState());
                 System.out.println("Bio                 : "+temp.data.getBio());
+                double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
+                System.out.println("Compatibility Score : " + compatibility + "%");
                 System.out.println();
 
                 while(true)
@@ -614,6 +625,8 @@ public class MatchDisplay {
                 System.out.println("City                : "+temp.data.getCity());
                 System.out.println("State               : "+temp.data.getState());
                 System.out.println("Bio                 : "+temp.data.getBio());
+                double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
+                System.out.println("Compatibility Score : " + compatibility + "%");
                 System.out.println();
 
                 while(true)
@@ -756,5 +769,35 @@ public class MatchDisplay {
         }
 
     }
+    private double calculateCompatibility(String user1, String user2) {
+        String sql = "SELECT * FROM compatibility WHERE username = ?";
+        try (Connection con = DatabaseConnector.getConnection();
+             PreparedStatement ps1 = con.prepareStatement(sql);
+             PreparedStatement ps2 = con.prepareStatement(sql)) {
+
+            ps1.setString(1, user1);
+            ps2.setString(1, user2);
+
+            ResultSet rs1 = ps1.executeQuery();
+            ResultSet rs2 = ps2.executeQuery();
+
+            if (rs1.next() && rs2.next()) {
+                int total = 6, matches = 0;
+
+                if (rs1.getString("travel").equalsIgnoreCase(rs2.getString("travel"))) matches++;
+                if (rs1.getString("morning_person").equalsIgnoreCase(rs2.getString("morning_person"))) matches++;
+                if (rs1.getString("sports").equalsIgnoreCase(rs2.getString("sports"))) matches++;
+                if (rs1.getString("pets").equalsIgnoreCase(rs2.getString("pets"))) matches++;
+                if (rs1.getString("books").equalsIgnoreCase(rs2.getString("books"))) matches++;
+                if (rs1.getString("lifestyle").equalsIgnoreCase(rs2.getString("lifestyle"))) matches++;
+
+                return (double) (matches * 100) / (double) total;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
 
 }

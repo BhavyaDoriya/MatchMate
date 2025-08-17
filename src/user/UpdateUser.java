@@ -26,183 +26,189 @@ public class UpdateUser {
         System.out.println("9. Update profile picture");
         System.out.println("10.Update qualification");
         System.out.println("11.Exit");
-        int choice= sc.nextInt();
-        switch(choice)
-        {
-            case 1:
-                try {
-                    new UpdateUser().updateName();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
+        try {
+            int choice= sc.nextInt();
+            switch(choice)
+            {
+                case 1:
+                    try {
+                        new UpdateUser().updateName();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 2:
+                    try {
+                        new UpdateUser().updateUsername();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 3:
+                    try {
+                        new UpdateUser().updatePassword();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 4:
+                    try {
+                        new UpdateUser().updateContact();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 5:
+                    try {
+                        new UpdateUser().updateAddress();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 6:
+                    try {
+                        new UpdateUser().updateAge();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 7:
+                    try {
+                        new UpdateUser().updateGenderPreference();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 8:
+                    try {
+                        new UpdateUser().updateGender();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 9:
+                    try {
+                        new UpdateUser().updateProfilePicture();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 10:
+                    try {
+                        new UpdateUser().updateQualification();
+                        System.out.println("Back to Edit profile page!");
+                    }catch (UpdateCancelledException e)
+                    {
+                        System.out.println(e.getMessage());
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    catch (SQLException e) {
+                        System.out.println("Connection lost!");
+                        System.out.println("Try again!");
+                        System.out.println("Back to Edit profile page!");
+                    }
+                    editProfile();
+                    break;
+                case 11:
+                    System.out.println("Returning to HomePage!");
+                    break;
+                default:
+                    System.out.println("Invalid choice!");
                     System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 2:
-                try {
-                    new UpdateUser().updateUsername();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
-                    System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 3:
-                try {
-                    new UpdateUser().updatePassword();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
-                    System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 4:
-                try {
-                    new UpdateUser().updateContact();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
-                    System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 5:
-                try {
-                    new UpdateUser().updateAddress();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
-                    System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 6:
-                try {
-                    new UpdateUser().updateAge();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
-                    System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 7:
-                try {
-                    new UpdateUser().updateGenderPreference();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
-                    System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 8:
-                try {
-                    new UpdateUser().updateGender();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
-                    System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 9:
-                try {
-                    new UpdateUser().updateProfilePicture();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
-                    System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 10:
-                try {
-                    new UpdateUser().updateQualification();
-                    System.out.println("Back to Edit profile page!");
-                }catch (UpdateCancelledException e)
-                {
-                    System.out.println(e.getMessage());
-                    System.out.println("Back to Edit profile page!");
-                }
-                catch (SQLException e) {
-                    System.out.println("Connection lost!");
-                    System.out.println("Try again!");
-                    System.out.println("Back to Edit profile page!");
-                }
-                editProfile();
-                break;
-            case 11:
-                System.out.println("Returning to HomePage!");
-                break;
-            default:
-                System.out.println("Invalid choice!");
-                System.out.println("Try again!");
-                editProfile();
+                    editProfile();
+            }
         }
+        catch (NumberFormatException e)
+        {
+            System.out.println("Please Enter Integer Value Only");
+            editProfile();
+        }
+
     }
-    /** 1) Update first OR last name */
     public void updateName() throws UpdateCancelledException, SQLException {
         String username = Session.getCurrentUsername();
 
-        // choose which field
         String which = InputUtils.promptUntilValid(
                 "Do you want to update First Name or Last Name: ",
                 s -> s.equalsIgnoreCase("First Name") || s.equalsIgnoreCase("Last Name"),
@@ -213,14 +219,12 @@ public class UpdateUser {
         String column = isFirst ? "first_name" : "last_name";
         String prompt = isFirst ? "Enter your new first name: " : "Enter your new last name: ";
 
-        // get new value
         String newVal = InputUtils.promptUntilValid(
                 prompt,
                 s -> !s.isEmpty(),
                 () -> new UpdateCancelledException("Updation cancelled by user")
         );
 
-        // run update
         String sql = "UPDATE users SET " + column + " = ? WHERE username = ?";
         try (Connection con = DatabaseConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -229,32 +233,27 @@ public class UpdateUser {
             ps.executeUpdate();
         }
 
-        // reflect in-memory
         if (isFirst) Session.getCurrentUserObject().setFirst_name(newVal);
         else         Session.getCurrentUserObject().setLast_name(newVal);
 
         System.out.println(which + " updated successfully!");
     }
 
-    /** 2) Update password */
     public void updatePassword() throws UpdateCancelledException, SQLException {
         String username = Session.getCurrentUsername();
 
-        // verify current
         InputUtils.promptUntilValid(
                 "Enter your current password: ",
                 s -> s.equals(Session.getCurrentUserObject().getPassword()),
                 () -> new UpdateCancelledException("Updation cancelled by user")
         );
 
-        // new password
         String newPass = InputUtils.promptUntilValid(
                 "Enter your new password: ",
                 UserManager::verifyPassword,
                 () -> new UpdateCancelledException("Updation cancelled by user")
         );
 
-        // update DB
         String sql = "UPDATE users SET password = ? WHERE username = ?";
         try (Connection con = DatabaseConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -267,7 +266,6 @@ public class UpdateUser {
         System.out.println("Password updated successfully!");
     }
 
-    /** 3) Update E‑mail OR Mobile Number */
     public void updateContact() throws UpdateCancelledException, SQLException {
         String username = Session.getCurrentUsername();
 
@@ -294,7 +292,7 @@ public class UpdateUser {
             }
             Session.getCurrentUserObject().setEmail(newEmail);
             System.out.println("E-Mail updated successfully!");
-        } else /* Mobile Number */ {
+        } else  {
             String newMob = InputUtils.promptUntilValid(
                     "Enter your new Mobile Number : ",
                     UserManager::verifyMobileNumber,
@@ -312,7 +310,6 @@ public class UpdateUser {
         }
     }
 
-    /** 4) Update City OR (City & State) */
     public void updateAddress() throws UpdateCancelledException, SQLException {
         String username = Session.getCurrentUsername();
 
@@ -340,7 +337,6 @@ public class UpdateUser {
             Session.getCurrentUserObject().setCity(newCity);
             System.out.println("City updated successfully!");
         } else {
-            // both city and state
             String newCity = InputUtils.promptUntilValid(
                     "Enter your new city : ",
                     s -> !s.isEmpty(),
@@ -365,7 +361,6 @@ public class UpdateUser {
         }
     }
 
-    /** 5) Recompute age from birth_date in memory only */
     public void updateAge() throws SQLException {
         String username=Session.getCurrentUsername();
         int newAge=User.getUserAge(Session.getCurrentUserObject().getBirth_date());
@@ -378,7 +373,6 @@ public class UpdateUser {
         System.out.println("Age recomputed successfully!");
     }
 
-    /** 6) Update gender preference */
     public void updateGenderPreference() throws UpdateCancelledException, SQLException {
         String username = Session.getCurrentUsername();
         String pref = InputUtils.promptUntilValid(
@@ -397,7 +391,6 @@ public class UpdateUser {
         System.out.println("Gender preference updated successfully!");
     }
 
-    /** 7) Update gender */
     public void updateGender() throws UpdateCancelledException, SQLException {
         String username = Session.getCurrentUsername();
         String gender = InputUtils.promptUntilValid(
@@ -416,7 +409,6 @@ public class UpdateUser {
         System.out.println("Gender updated successfully!");
     }
 
-    /** 8) Update profile picture */
     public void updateProfilePicture() throws UpdateCancelledException, SQLException {
         String username = Session.getCurrentUsername();
         String path = InputUtils.promptUntilValid(
@@ -440,17 +432,14 @@ public class UpdateUser {
             ps.setBlob(1, fis);
             ps.setString(2, username);
             ps.executeUpdate();
-            // refresh memory stream
             Session.getCurrentUserObject().setImage_stream(new FileInputStream(path));
         } catch (FileNotFoundException e) {
-            // never happens – we already tested above
         } catch (IOException e) {
 
         }
         System.out.println("Profile picture updated successfully!");
     }
 
-    /** 9) Update qualification */
     public void updateQualification() throws UpdateCancelledException, SQLException {
         String username = Session.getCurrentUsername();
         String qual = InputUtils.promptUntilValid(
@@ -468,22 +457,18 @@ public class UpdateUser {
         Session.getCurrentUserObject().setQualification(qual);
         System.out.println("Qualification updated successfully!");
     }
-    /** 10) Update username */
     public void updateUsername() throws UpdateCancelledException, SQLException {
         String oldUsername = Session.getCurrentUsername();
 
-        // prompt for a new username (or B to cancel)
         String newUsername = InputUtils.promptUntilValid(
                 "Enter your new username: ",
                 s -> {
-                    // check non‑empty
                     if (s.isEmpty()) return false;
-                    // check uniqueness by calling your stored proc
                     try (Connection con = DatabaseConnector.getConnection();
                          CallableStatement cst = con.prepareCall("CALL getUserData(?)")) {
                         cst.setString(1, s);
                         try (ResultSet rs = cst.executeQuery()) {
-                            return !rs.next();  // valid if no row
+                            return !rs.next();
                         }
                     } catch (SQLException ex) {
                         System.out.println("Error checking username uniqueness!");
@@ -493,7 +478,6 @@ public class UpdateUser {
                 () -> new UpdateCancelledException("Updation cancelled by user.")
         );
 
-        // update in database
         String sql = "UPDATE users SET username = ? WHERE username = ?";
         try (Connection con = DatabaseConnector.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -502,7 +486,6 @@ public class UpdateUser {
             ps.executeUpdate();
         }
 
-        // reflect in-memory
         Session.getCurrentUserObject().setUsername(newUsername);
         Session.setCurrentUsername(newUsername);
 

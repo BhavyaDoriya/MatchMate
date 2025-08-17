@@ -1,7 +1,6 @@
 package ds;
 import user.User;
 import java.util.Scanner;
-//username ki linked list
 
 public class CustomLinkedList
 {

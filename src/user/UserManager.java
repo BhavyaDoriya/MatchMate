@@ -1,6 +1,5 @@
 package user;
 import util.*;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -13,8 +12,7 @@ import ExceptionHandling.*;
 
 public class UserManager {
     static Scanner sc=new Scanner(System.in);
-    public void Register()
-            throws RegistrationCancelledException, SQLException
+    public void Register() throws RegistrationCancelledException,SQLException
     {
         String first = InputUtils.promptUntilValid(
                 "Enter first name: ",
@@ -113,7 +111,6 @@ public class UserManager {
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
 
-        // profile picture
         InputStream pic = null;
         while (true) {
             String choice = InputUtils.promptUntilValid(
@@ -146,17 +143,14 @@ public class UserManager {
                 pic = new FileInputStream(path);
                 break;
             } catch (FileNotFoundException e) {
-                //Will never happen
             }
         }
 
-        // auto‑gen username
         String username;
         do {
             username = generateUsername(first, last);
         } while (username == null);
 
-        // insert
         String sql = """
         INSERT INTO users 
           (first_name,last_name,birth_date,age,gender,gender_preference,
@@ -190,49 +184,42 @@ public class UserManager {
 
         System.out.println("\nAnswer a few compatibility questions!");
 
-// traveling
         String q1 = InputUtils.promptUntilValid(
                 "Do you like traveling? (Yes/No): ",
                 s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
 
-// morning person
         String q2 = InputUtils.promptUntilValid(
                 "Are you a morning person? (Yes/No): ",
                 s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
 
-// sports
         String q3 = InputUtils.promptUntilValid(
                 "Do you enjoy watching sports? (Yes/No): ",
                 s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
 
-// pets
         String q4 = InputUtils.promptUntilValid(
                 "Do you like pets? (Yes/No): ",
                 s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
 
-// books
         String q5 = InputUtils.promptUntilValid(
                 "Do you enjoy reading books? (Yes/No): ",
                 s -> s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No"),
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
 
-// city vs countryside
         String q6 = InputUtils.promptUntilValid(
                 "Would you prefer city life or countryside life? (City/Countryside): ",
                 s -> s.equalsIgnoreCase("City") || s.equalsIgnoreCase("Countryside"),
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
 
-// insert into compatibility table
         String compSql = """
 INSERT INTO compatibility(username, travel, morning_person, sports, pets, books, lifestyle)
 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -267,7 +254,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
                         "Bio: " + bio + "\n\n" +
                         "Start finding your matches today!";
 
-// send welcome email with profile summary
         EmailUtil.sendMail(
                 email,
                 "Welcome to MatchMate ❤️",
@@ -277,33 +263,29 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 
     public boolean Login() throws LoginCancelledException, SQLException {
         while (true) {
-            // prompt for username (or U for forgot username / B to cancel)
             String enteredUsername = InputUtils.promptUntilValid(
                     "Enter username (or U if you forgot username): ",
                     s -> !s.isEmpty(),
                     () -> new LoginCancelledException("Login cancelled by user.")
             );
 
-            // if user typed U → run forgot username flow
             if (enteredUsername.equalsIgnoreCase("U")) {
-                new EmailOTP().forgotUsername();  // call OTP-based method
-                continue; // after showing username, restart login
+                new EmailOTP().forgotUsername();
+                continue;
             }
 
-            // prompt for password (or F for forgot password / B to cancel)
             String enteredPassword = InputUtils.promptUntilValid(
                     "Enter password (or F if you forgot password): ",
                     s -> !s.isEmpty(),
                     () -> new LoginCancelledException("Login cancelled by user.")
             );
 
-            // if user typed F → run forgot password flow
             if (enteredPassword.equalsIgnoreCase("F")) {
-                new EmailOTP().forgotPassword();  // call OTP-based method
-                continue; // after reset, restart login
+                new EmailOTP().forgotPassword();
+                continue;
             }
 
-            // try authenticating
+
             String sql = "SELECT 1 FROM users WHERE username = ? AND password = ?";
             try (Connection con = DatabaseConnector.getConnection();
                  PreparedStatement ps = con.prepareStatement(sql)) {
@@ -313,7 +295,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        // successful login
                         System.out.println("Login Successful");
                         Session.setCurrentUsername(enteredUsername);
                         Session.setCurrentUserObject(Session.getUserObject(enteredUsername));
@@ -322,7 +303,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
                 }
             }
 
-            // wrong credentials — ask whether to retry or back out
             String retry = InputUtils.promptUntilValid(
                     "Incorrect username or password. [C]ontinue / [B]ack: ",
                     s -> s.equalsIgnoreCase("C") || s.equalsIgnoreCase("B"),
@@ -331,7 +311,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
             if (retry.equalsIgnoreCase("B")) {
                 throw new LoginCancelledException("Login cancelled by user.");
             }
-            // else loop and prompt again
         }
     }
 
@@ -538,7 +517,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
                 count = rs.getInt(1);
             }
 
-            // Increment count to create the new unique username
             int nextNumber = count + 1;
             return prefix+"00"+nextNumber;
         }

@@ -1,12 +1,8 @@
 package match;
 
-import ExceptionHandling.GoBackException;
 import ds.CustomLinkedList;
 import user.*;
 import util.DatabaseConnector;
-import util.InputUtils;
-
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -157,7 +153,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                // Replace this with actual display logic
                 String likerName=rs.getString("username");
                 likedByUser.insertAtLast(Session.getUserObject(likerName));
             }
@@ -182,7 +177,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                // Replace this with actual display logic
                 String likerName=rs.getString("username");
                 likedByUserSortedByAge.insertAtLast(Session.getUserObject(likerName));
             }
@@ -207,7 +201,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                // Replace this with actual display logic
                 String likerName=rs.getString("username");
                 likedByUserSortedByCity.insertAtLast(Session.getUserObject(likerName));
             }
@@ -234,7 +227,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                // Replace this with actual display logic
                 String likerName=rs.getString("username");
                 likedByUserSortedByCityANDAge.insertAtLast(Session.getUserObject(likerName));
             }
@@ -257,7 +249,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                // Replace this with actual display logic
                 String mutualLikerName=rs.getString("username");
                 mutualLikes.insertAtLast(Session.getUserObject(mutualLikerName));
 
@@ -284,7 +275,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                // Replace this with actual display logic
                 String mutualLikerName=rs.getString("username");
                 mutualLikesSortedByAge.insertAtLast(Session.getUserObject(mutualLikerName));
 
@@ -310,7 +300,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                // Replace this with actual display logic
                 String mutualLikerName=rs.getString("username");
                 mutualLikesSortedByCity.insertAtLast(Session.getUserObject(mutualLikerName));
 
@@ -338,7 +327,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-                // Replace this with actual display logic
                 String mutualLikerName=rs.getString("username");
                 mutualLikesSortedByCityANDAge.insertAtLast(Session.getUserObject(mutualLikerName));
 
@@ -361,7 +349,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-//
                 String likedByUsername=rs.getString("username");
                 likedUser.insertAtLast(Session.getUserObject(likedByUsername));
             }
@@ -387,7 +374,6 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-//
                 String likedByUsername=rs.getString("username");
                 likedUserSortedByAge.insertAtLast(Session.getUserObject(likedByUsername));
             }
@@ -413,7 +399,7 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-//
+
                 String likedByUsername=rs.getString("username");
                 likedUserSortedByCity.insertAtLast(Session.getUserObject(likedByUsername));
             }
@@ -440,7 +426,7 @@ public class MatchEngine {
             ResultSet rs = pst.executeQuery();
 
             while (rs.next()) {
-//
+
                 String likedByUsername=rs.getString("username");
                 likedUserSortedByCityANDAge.insertAtLast(Session.getUserObject(likedByUsername));
             }

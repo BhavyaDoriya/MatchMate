@@ -1,8 +1,6 @@
 package match;
 import ExceptionHandling.GoBackException;
-import ExceptionHandling.RegistrationCancelledException;
 import ds.*;
-import org.w3c.dom.Node;
 import user.Session;
 import util.DatabaseConnector;
 import util.InputUtils;
@@ -99,7 +97,7 @@ public class MatchDisplay {
                             {
                                 File dir = new File("C://profile_images");
                                 if (!dir.exists()) {
-                                    dir.mkdirs(); // create the folder if it doesn't exist
+                                    dir.mkdirs();
                                 }
 
                                 File imageFile=new File(dir,temp.data.getUsername()+".jpg");
@@ -229,7 +227,7 @@ public class MatchDisplay {
                     s -> !s.isEmpty(),
                     () -> new GoBackException("User chose to go back!")
             );
-            matchEngine.findMatchesByCityANDAge(startAgeOfRange,city);
+            matchEngine.findMutualLikesSortedByCityANDAge(startAgeOfRange,city);
             temp=matchEngine.mutualLikesSortedByCityANDAge.first;
         }
         Scanner sc=new Scanner(System.in);
@@ -248,7 +246,7 @@ public class MatchDisplay {
             System.out.println("List of Mutual Likes sorted by Age And City:");
             while (true)
             {
-                System.out.println("Contact information is only visible when user likes you back!");
+                System.out.println("Contact information is visible Now!");
                 System.out.println();
                 System.out.println();
                 System.out.println("# Profile - "+count);
@@ -262,6 +260,8 @@ public class MatchDisplay {
                 System.out.println("City                : "+temp.data.getCity());
                 System.out.println("State               : "+temp.data.getState());
                 System.out.println("Bio                 : "+temp.data.getBio());
+                System.out.println("Contact             : "+temp.data.getMobile_number());
+                System.out.println("Email               : "+temp.data.getEmail());
                 double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
                 System.out.println("Compatibility Score : " + compatibility + "%");
                 System.out.println();
@@ -282,7 +282,7 @@ public class MatchDisplay {
                         {
                             File dir = new File("C://profile_images");
                             if (!dir.exists()) {
-                                dir.mkdirs(); // create the folder if it doesn't exist
+                                dir.mkdirs();
                             }
 
                             File imageFile=new File(dir,temp.data.getUsername()+".jpg");
@@ -461,7 +461,7 @@ public class MatchDisplay {
                         {
                             File dir = new File("C://profile_images");
                             if (!dir.exists()) {
-                                dir.mkdirs(); // create the folder if it doesn't exist
+                                dir.mkdirs();
                             }
 
                             File imageFile=new File(dir,temp.data.getUsername()+".jpg");
@@ -645,7 +645,7 @@ public class MatchDisplay {
                         {
                             File dir = new File("C://profile_images");
                             if (!dir.exists()) {
-                                dir.mkdirs(); // create the folder if it doesn't exist
+                                dir.mkdirs();
                             }
 
                             File imageFile=new File(dir,temp.data.getUsername()+".jpg");
@@ -680,7 +680,7 @@ public class MatchDisplay {
 
                 System.out.println();
 
-                System.out.println("[P]revious/[N]ext/[B]ack/[L]ike Profile");
+                System.out.println("[P]revious/[N]ext/[B]ack");
 
                 String choice=sc.nextLine();
 
@@ -728,10 +728,6 @@ public class MatchDisplay {
                 else if(choice.equalsIgnoreCase("B"))
                 {
                     break;
-                }
-                else if(choice.equalsIgnoreCase("L"))
-                {
-                    new LikeManager().LikeUser(temp.data.getUsername());
                 }
                 else
                 {

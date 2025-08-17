@@ -1,12 +1,9 @@
 package user;
-
 import util.DatabaseConnector;
-
 import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Calendar;
+
 
 public class Session {
     private static String currentUsername;

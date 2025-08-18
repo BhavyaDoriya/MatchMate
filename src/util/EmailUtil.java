@@ -1,9 +1,16 @@
 package util;
 
+import ExceptionHandling.GoBackException;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import user.UserManager;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Properties;
+import java.util.Scanner;
 
 public class EmailUtil {
     private static final String senderEmail = "matchmatePlatformHelp@gmail.com"; // your Gmail
@@ -38,6 +45,91 @@ public class EmailUtil {
         } catch (MessagingException e) {
             e.printStackTrace();
             return false;
+        }
+    }
+    public void forgotUsername() throws GoBackException {
+        while (true) {
+            String email = InputUtils.promptUntilValid("Enter your registered email: ",
+                    s -> !s.isEmpty(), () -> new GoBackException("User chose to go back from forgot username!"));
+
+            try {
+                PreparedStatement ps = DatabaseConnector.getConnection()
+                        .prepareStatement("SELECT username, first_name FROM users WHERE email = ?");
+                ps.setString(1, email);
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    String username = rs.getString("username");
+                    String first = rs.getString("first_name");
+
+                    String otp = OTPGenerator.generateOTP(6);
+                    String body = "Hi " + first + ",\n\nYour OTP to recover your username is: " + otp;
+                    EmailUtil.sendMail(email, "Forgot Username - MatchMate", body);
+
+
+                    String enteredOtp = InputUtils.promptUntilValid("EnterOTP sent to  the your email: ",
+                            s -> s.equalsIgnoreCase(otp),
+                            () -> new GoBackException("User chose to go back from forgot username"));
+
+                    String msg = "Hi " + first + ",\n\nYour MatchMate username is: " + username;
+                    EmailUtil.sendMail(email, "Your MatchMate Username", msg);
+                    System.out.println("Your username has been sent to your email!");
+                    return;
+
+                } else {
+                    System.out.println(" No account found with that email.");
+                    System.out.println("Try again! or Enter B to go back!");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void forgotPassword() throws  GoBackException{
+        while (true) {
+            String username = InputUtils.promptUntilValid("Enter your username: ",
+                    s -> !s.isEmpty(),
+                    () -> new GoBackException("User chose to go back from forget password option"));
+            String email = InputUtils.promptUntilValid("Enter your registered email: ",
+                    s -> !s.isEmpty(), () -> new GoBackException("User chose to go back from forgot username!"));
+
+
+            try {
+                PreparedStatement ps = DatabaseConnector.getConnection()
+                        .prepareStatement("SELECT first_name FROM users WHERE username = ? AND email = ?");
+                ps.setString(1, username);
+                ps.setString(2, email);
+                ResultSet rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    String first = rs.getString("first_name");
+
+                    String otp = OTPGenerator.generateOTP(6);
+                    String body = "Hi " + first + ",\n\nYour OTP to reset your password is: " + otp;
+                    EmailUtil.sendMail(email, "Forgot Password - MatchMate", body);
+
+                    String enteredOtp = InputUtils.promptUntilValid("EnterOTP sent to  the your email: ",
+                            s -> s.equalsIgnoreCase(otp),
+                            () -> new GoBackException("User chose to go back from forgot username"));
+
+                    String newPass = InputUtils.promptUntilValid("Enter your new password: ", UserManager::verifyPassword, () -> new GoBackException("User chose to go back from forgot password option!"));
+
+                    PreparedStatement ps2 = DatabaseConnector.getConnection()
+                            .prepareStatement("UPDATE users SET password = ? WHERE username = ?");
+                    ps2.setString(1, newPass);
+                    ps2.setString(2, username);
+                    ps2.executeUpdate();
+
+                    System.out.println("Password reset successful!");
+                    return;
+                } else {
+                    System.out.println("No matching account found.");
+                    System.out.println("Try again! or Enter B to go back!");
+                }
+            } catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

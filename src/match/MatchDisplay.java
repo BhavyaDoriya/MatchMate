@@ -697,7 +697,7 @@ public class MatchDisplay {
                         }
                         else
                         {
-                            System.out.println("BAck to current match");
+                            System.out.println("Back to current match");
                         }
                     }
                     else{

@@ -1,5 +1,3 @@
-
-
 import ExceptionHandling.DeletionCancelledException;
 import ExceptionHandling.GoBackException;
 import ExceptionHandling.LoginCancelledException;

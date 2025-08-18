@@ -1,7 +1,5 @@
 package user;
-
 import java.io.InputStream;
-import java.sql.Blob;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -192,11 +190,8 @@ public class User {
         LocalDate birthDate = LocalDate.parse(birthDateString, formatter);
         LocalDate currentDate = LocalDate.now();
 
-        if (birthDate != null) {
             return Period.between(birthDate, currentDate).getYears();
-        } else {
-            return 0;
-        }
+
     }
 
 }

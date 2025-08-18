@@ -5,10 +5,6 @@ import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-/**
- * Prompts until valid, or if user enters “B”, throws whatever
- * exception your supplier provides.
- */
 public class InputUtils {
 
     private static final Scanner sc = new Scanner(System.in);

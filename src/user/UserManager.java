@@ -11,7 +11,7 @@ import java.util.Scanner;
 import ExceptionHandling.*;
 
 public class UserManager {
-    static Scanner sc=new Scanner(System.in);
+
     public void Register() throws RegistrationCancelledException,SQLException
     {
         String first = InputUtils.promptUntilValid(
@@ -63,7 +63,7 @@ public class UserManager {
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
         String otp = OTPGenerator.generateOTP(6);
-        boolean sent = EmailOTP.sendOTP(email, otp);
+        boolean sent = EmailUtil.sendMail(email,"Your OTP code","Your otp for registration is "+otp);
         if (!sent) {
             System.out.println("Failed to send OTP to email. Try again later.");
             return;
@@ -146,10 +146,7 @@ public class UserManager {
             }
         }
 
-        String username;
-        do {
-            username = generateUsername(first, last);
-        } while (username == null);
+        String username = generateUsername(first, last);
 
         String sql = """
         INSERT INTO users 
@@ -269,8 +266,12 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
                     () -> new LoginCancelledException("Login cancelled by user.")
             );
 
-            if (enteredUsername.equalsIgnoreCase("U")) {
-                new EmailOTP().forgotUsername();
+            if (enteredUsername.trim().equalsIgnoreCase("U")) {
+                try {
+                    new EmailUtil().forgotUsername();
+                } catch (GoBackException e) {
+                    System.out.println("Back to Login!");
+                }
                 continue;
             }
 
@@ -281,7 +282,11 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
             );
 
             if (enteredPassword.equalsIgnoreCase("F")) {
-                new EmailOTP().forgotPassword();
+                try {
+                    new EmailUtil().forgotPassword();
+                } catch (GoBackException e) {
+                    System.out.println("Back to Login!");
+                }
                 continue;
             }
 
@@ -350,7 +355,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
     }
     static boolean verifyBirthDate(String bd)
     {
-
         if(bd.length()!=10)
         {
             System.out.println("Please Enter Birthdate in YYYY-MM-DD format!");
@@ -495,7 +499,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 }
     static  boolean verifyHeight(int height)
     {
-        if(height>272||height<100)
+        if(height>272||height<50)
         {
             System.out.println("Invalid height!");
             return false;
@@ -516,14 +520,23 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
             if (rs.next()) {
                 count = rs.getInt(1);
             }
+            int nextNumber;
+            String username=prefix+"00";
+            do {
+                 nextNumber= count + 1;
 
-            int nextNumber = count + 1;
-            return prefix+"00"+nextNumber;
+            }while (!UpdateUser.checkUserNameDoesNotExist(username+nextNumber));
+            username+=nextNumber;
+            rs.close();
+            ps.close();
+            con.close();
+            return username;
+
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            return null;
+            throw new RegistrationCancelledException("Registration cancelled by some connection error!");
         }
 
     }
@@ -536,5 +549,6 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
         pst.executeUpdate();
         Session.setCurrentUserObject(null);
         Session.setCurrentUsername(null);
+        pst.close();
     }
 }

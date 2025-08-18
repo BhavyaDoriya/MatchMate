@@ -22,7 +22,7 @@ public class LikeManager {
             System.out.println("Profile liked successfully!");
 
             User likedUser = Session.getUserObject(liked_username);
-                System.out.println("Sending Like notification to: " + likedUser.getEmail());
+                System.out.println("Sending Like notification to: " + likedUser.getFirst_name());
                 EmailUtil.sendMail(
                         likedUser.getEmail(),
                         "You got a new Like! ❤️",

@@ -1,13 +1,12 @@
 package user;
+import com.mysql.cj.jdbc.exceptions.MysqlDataTruncation;
 import util.*;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+
+import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Scanner;
 import ExceptionHandling.*;
 
 public class UserManager {
@@ -56,24 +55,35 @@ public class UserManager {
                 UserManager::verifyMobileNumber,
                 () -> new RegistrationCancelledException("Registration cancelled")
         );
+        String email="";
+        do {
+             email = InputUtils.promptUntilValid(
+                    "Enter email: ",
+                    UserManager::verifyEmail,
+                    () -> new RegistrationCancelledException("Registration cancelled")
+            );
 
-        String email = InputUtils.promptUntilValid(
-                "Enter email: ",
-                UserManager::verifyEmail,
-                () -> new RegistrationCancelledException("Registration cancelled")
-        );
-        String otp = OTPGenerator.generateOTP(6);
-        boolean sent = EmailUtil.sendMail(email,"Your OTP code","Your otp for registration is "+otp);
-        if (!sent) {
-            System.out.println("Failed to send OTP to email. Try again later.");
-            return;
-        }
+            String otp = OTPGenerator.generateOTP(6);
+            System.out.println("Sending OTP to your email...");
+            boolean sent = EmailUtil.sendMail(email, "Your OTP code", "Your otp for registration is " + otp);
+            if (!sent) {
+                System.out.println("Failed to send OTP to email. Try again later.");
+                continue;
+            }
+            System.out.println("OTP sent successfully!");
+            try {
+                String userOTPInput = InputUtils.promptUntilValid(
+                        "Enter the OTP sent to your email/Press [B] to re-enter you email: ",
+                        s -> s.equals(otp),
+                        () -> new GoBackException("User chose to re enter his email!")
+                );
+                break;
+            }catch (GoBackException e)
+            {
+                System.out.println(e.getMessage());
+            }
 
-        String userOTPInput = InputUtils.promptUntilValid(
-                "Enter the OTP sent to your email: ",
-                s -> s.equals(otp),
-                () -> new RegistrationCancelledException("Registration cancelled")
-        );
+        }while (true);
 
         String city = InputUtils.promptUntilValid(
                 "Enter city: ",
@@ -176,7 +186,13 @@ public class UserManager {
             ps.setBlob  (idx++, pic);
             ps.setString(idx++, username);
             ps.setString(idx,   pass);
-            ps.executeUpdate();
+            try {
+                ps.executeUpdate();
+            }
+            catch (MysqlDataTruncation e)
+            {
+                System.out.println("Invalid birth-date entered try again!");
+            }
         }
 
         System.out.println("\nAnswer a few compatibility questions!");
@@ -251,11 +267,13 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
                         "Bio: " + bio + "\n\n" +
                         "Start finding your matches today!";
 
+        System.out.println("Sending profile details to your email...");
         EmailUtil.sendMail(
                 email,
                 "Welcome to MatchMate ❤️",
                 profileDetails
         );
+        System.out.println("Sent");
     }
 
     public boolean Login() throws LoginCancelledException, SQLException {
@@ -275,11 +293,19 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
                 continue;
             }
 
-            String enteredPassword = InputUtils.promptUntilValid(
-                    "Enter password (or F if you forgot password): ",
-                    s -> !s.isEmpty(),
-                    () -> new LoginCancelledException("Login cancelled by user.")
-            );
+            String enteredPassword="";
+            try {
+                enteredPassword = InputUtils.promptUntilValid(
+                        "Enter password (or F if you forgot password)/Enter [B] to re-enter username: ",
+                        s -> !s.isEmpty(),
+                        () -> new GoBackException("User chose to Re-enter username.")
+                );
+            }
+            catch (GoBackException e)
+            {
+                System.out.println(e.getMessage());
+                continue;
+            }
 
             if (enteredPassword.equalsIgnoreCase("F")) {
                 try {
@@ -550,5 +576,47 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
         Session.setCurrentUserObject(null);
         Session.setCurrentUsername(null);
         pst.close();
+    }
+    public void generateUserProfile(User u,boolean showContact)
+    {
+        System.out.println("Downloading profile...");
+        File dir = new File("C://profile_documents");
+        if(!dir.exists())
+        {
+            dir.mkdirs();
+        }
+        String content=
+        "Username             : "+u.getUsername()+"\n"+
+        "Name                 : "+u.getFirst_name()+" "+u.getLast_name()+"\n"+
+        "Birth Date           : "+u.getBirth_date()+"\n"+
+        "Age                  : "+u.getAge()+" years"+"\n"+
+        "Height               : "+u.getHeight()+" cm"+"\n"+
+        "Gender               : "+u.getGender()+"\n"+
+        "Gender Preferences  : "+u.getGender_preference()+"\n"+
+        "Qualification        :"+u.getQualification()+"\n"+
+        "Dietary Preferences  : "+u.getDietary_choice()+"\n"+
+        "City                 : "+u.getCity()+"\n"+
+        "State                : "+u.getState()+"\n"+
+        "Bio                  : "+u.getBio()+"\n";
+
+        if(showContact)
+        {
+            content+=
+        "Phone no.            : "+u.getMobile_number()+"\n"+
+        "E-mail               : "+u.getEmail()+"\n";
+        }
+        File arr[]=dir.listFiles();
+        int count=arr.length;
+        count++;
+        try {
+            FileWriter fw=new FileWriter("C://profile_documents/downloaded_profile_"+count+".txt");
+            fw.write(content);
+            fw.close();
+            System.out.println("Profile download successfully!");
+        } catch (IOException e) {
+            System.out.println("Try again...some error occurred with file writing!");
+            e.printStackTrace();
+        }
+
     }
 }

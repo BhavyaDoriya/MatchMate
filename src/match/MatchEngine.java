@@ -1,5 +1,4 @@
 package match;
-
 import ds.CustomLinkedList;
 import user.*;
 import util.DatabaseConnector;
@@ -434,5 +433,19 @@ public class MatchEngine {
         } catch (SQLException e) {
             System.out.println("Connection lost while fetching users who liked you!");
         }
+    }
+    public void removeUserFromAllLists(String username) {
+        this.likedUser.removeByUsername(username);
+        this.likedUserSortedByAge.removeByUsername(username);
+        this.likedUserSortedByCity.removeByUsername(username);
+        this.likedUserSortedByCityANDAge.removeByUsername(username);
+        this.likedByUser.removeByUsername(username);
+        this.likedByUserSortedByAge.removeByUsername(username);
+        this.likedByUserSortedByCity.removeByUsername(username);
+        this.likedByUserSortedByCityANDAge.removeByUsername(username);
+        this.mutualLikes.removeByUsername(username);
+        this.mutualLikesSortedByAge.removeByUsername(username);
+        this.mutualLikesSortedByCity.removeByUsername(username);
+        this.mutualLikesSortedByCityANDAge.removeByUsername(username);
     }
 }

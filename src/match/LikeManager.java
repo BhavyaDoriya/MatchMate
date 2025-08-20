@@ -38,6 +38,22 @@ public class LikeManager {
             e.printStackTrace();
         }
     }
+    public void UnlikeUser(String unlikedUsername) {
+        String query = "DELETE FROM likes WHERE liker = ? AND liked = ?";
 
+        try {
+            PreparedStatement pst = DatabaseConnector.getConnection().prepareStatement(query);
+            pst.setString(1, Session.getCurrentUsername());
+            pst.setString(2, unlikedUsername);
+            int rows = pst.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Profile unliked successfully!");
+            } else {
+                System.out.println("You had not liked this profile before.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error while unliking profile: " + e.getMessage());
+        }
 
+    }
 }

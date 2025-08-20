@@ -2,6 +2,7 @@ package match;
 import ExceptionHandling.GoBackException;
 import ds.*;
 import user.Session;
+import user.UserManager;
 import util.DatabaseConnector;
 import util.InputUtils;
 
@@ -78,7 +79,7 @@ public class MatchDisplay {
                     System.out.println("State               : "+temp.data.getState());
                     System.out.println("Bio                 : "+temp.data.getBio());
                     double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
-                    System.out.println("Compatibility Score : " + compatibility + "%");
+                    System.out.println("Compatibility Score : " + Math.round(compatibility*100.0)/100.0 + "%");
                     System.out.println();
 
                     while(true)
@@ -124,6 +125,10 @@ public class MatchDisplay {
                         {
                             break;
                         }
+                        else if(choice.equalsIgnoreCase("B"))
+                        {
+                            return;
+                        }
                         else
                         {
                             System.out.println("Enter valid input!");
@@ -131,8 +136,8 @@ public class MatchDisplay {
                     }
 
                     System.out.println();
-
-                    System.out.println("[P]revious/[N]ext/[B]ack/[L]ike Profile");
+                    while (true){
+                    System.out.println("[P]revious/[N]ext/[B]ack/[L]ike Profile/[U]nlike Profile/[D]ownload profile");
 
                     String choice=sc.nextLine();
 
@@ -141,55 +146,67 @@ public class MatchDisplay {
                         if(temp.prev==null)
                         {
                             System.out.println("No Previous User Data!");
-                            System.out.println("Would you like to exit view matches method[B] or go back to current match profile[Y] ?");
-                            String choice1= sc.nextLine();
-                            if(choice1.equalsIgnoreCase("B"))
-                            {
+                            String choice1;
+                            try {
+                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+
+                            } catch (RuntimeException e) {
+                                return;
+                            }
+                                System.out.println("Back to current match");
                                 break;
-                            }
-                            else
-                            {
-                                System.out.println("BAck to current match");
-                            }
                         }
                         else{
                             temp=temp.prev;
                             count--;
+                            break;
                         }
 
                     } else if (choice.equalsIgnoreCase("N")) {
                         if(temp.next==null)
                         {
                             System.out.println("No Next User Data!");
-                            System.out.println("Would you like to exit view matches method[B] or go back to current match profile[Y] ?");
-                            String choice1= sc.nextLine();
-                            if(choice1.equalsIgnoreCase("B"))
-                            {
-                                break;
+                            String choice1;
+                            try {
+                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+
+                            } catch (RuntimeException e) {
+                                return;
                             }
-                            else
-                            {
-                                System.out.println("Back to current match");
-                            }
+                            System.out.println("Back to current match");
+                            break;
                         }
                         else{
                             temp=temp.next;
                             count++;
+                            break;
                         }
                     }
                     else if(choice.equalsIgnoreCase("B"))
                     {
-                        break;
+                        return;
                     }
                     else if(choice.equalsIgnoreCase("L"))
                     {
                         new LikeManager().LikeUser(temp.data.getUsername());
+                    } else if (choice.equalsIgnoreCase("U")) {
+                        new LikeManager().UnlikeUser(temp.data.getUsername());
+                        matchEngine.removeUserFromAllLists(temp.data.getUsername());
+                    } else if(choice.equalsIgnoreCase("D"))
+                    {
+                        MatchEngine m1=new MatchEngine();
+                        m1.findMutualLikes();
+                        if(m1.mutualLikes.contains(temp.data))
+                        new UserManager().generateUserProfile(temp.data,true);
+                        else
+                            new UserManager().generateUserProfile(temp.data,false);
                     }
                     else
                     {
                         System.out.println("Enter valid input!");
                     }
                 }
+            }
         }
 
     }
@@ -244,57 +261,49 @@ public class MatchDisplay {
             System.out.println("List of Mutual Likes sorted by"+choiceFilter+":");
         else
             System.out.println("List of Mutual Likes sorted by Age And City:");
-            while (true)
-            {
+            while (true) {
                 System.out.println("Contact information is visible Now!");
                 System.out.println();
                 System.out.println();
-                System.out.println("# Profile - "+count);
-                System.out.println("Name                : "+temp.data.getFirst_name()+" "+temp.data.getLast_name());
-                System.out.println("Birth Date          : "+temp.data.getBirth_date());
-                System.out.println("Age                 : "+temp.data.getAge()+" years");
-                System.out.println("Height              : "+temp.data.getHeight()+" cm");
-                System.out.println("Gender              : "+temp.data.getGender());
-                System.out.println("Gender Preferences  : "+temp.data.getGender_preference());
-                System.out.println("Dietary Preferences : "+temp.data.getDietary_choice());
-                System.out.println("City                : "+temp.data.getCity());
-                System.out.println("State               : "+temp.data.getState());
-                System.out.println("Bio                 : "+temp.data.getBio());
-                System.out.println("Contact             : "+temp.data.getMobile_number());
-                System.out.println("Email               : "+temp.data.getEmail());
+                System.out.println("# Profile - " + count);
+                System.out.println("Name                : " + temp.data.getFirst_name() + " " + temp.data.getLast_name());
+                System.out.println("Birth Date          : " + temp.data.getBirth_date());
+                System.out.println("Age                 : " + temp.data.getAge() + " years");
+                System.out.println("Height              : " + temp.data.getHeight() + " cm");
+                System.out.println("Gender              : " + temp.data.getGender());
+                System.out.println("Gender Preferences  : " + temp.data.getGender_preference());
+                System.out.println("Dietary Preferences : " + temp.data.getDietary_choice());
+                System.out.println("City                : " + temp.data.getCity());
+                System.out.println("State               : " + temp.data.getState());
+                System.out.println("Bio                 : " + temp.data.getBio());
+                System.out.println("Contact             : " + temp.data.getMobile_number());
+                System.out.println("Email               : " + temp.data.getEmail());
                 double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
-                System.out.println("Compatibility Score : " + compatibility + "%");
+                System.out.println("Compatibility Score : " + Math.round(compatibility * 100.0) / 100.0 + "%");
                 System.out.println();
 
-                while(true)
-                {
+                while (true) {
                     System.out.println("Press [O]pen Profile Picture/[S]kip");
-                    String choice=sc.nextLine();
-                    if(choice.equalsIgnoreCase("O"))
-                    {
-                        InputStream fis=temp.data.getImage_stream();
-                        if(fis==null)
-                        {
+                    String choice = sc.nextLine();
+                    if (choice.equalsIgnoreCase("O")) {
+                        InputStream fis = temp.data.getImage_stream();
+                        if (fis == null) {
                             System.out.println("No image provided by user");
                             break;
-                        }
-                        else
-                        {
+                        } else {
                             File dir = new File("C://profile_images");
                             if (!dir.exists()) {
                                 dir.mkdirs();
                             }
 
-                            File imageFile=new File(dir,temp.data.getUsername()+".jpg");
-                            try
-                            {
-                                FileOutputStream fos=new FileOutputStream(imageFile);
-                                byte buffer[]=new byte[1024];
-                                int bytesRead=fis.read(buffer);
-                                while(bytesRead!=-1)
-                                {
-                                    fos.write(buffer,0,bytesRead);
-                                    bytesRead=fis.read(buffer);
+                            File imageFile = new File(dir, temp.data.getUsername() + ".jpg");
+                            try {
+                                FileOutputStream fos = new FileOutputStream(imageFile);
+                                byte buffer[] = new byte[1024];
+                                int bytesRead = fis.read(buffer);
+                                while (bytesRead != -1) {
+                                    fos.write(buffer, 0, bytesRead);
+                                    bytesRead = fis.read(buffer);
                                 }
                                 Desktop.getDesktop().open(imageFile);
                                 break;
@@ -304,71 +313,70 @@ public class MatchDisplay {
                                 e.printStackTrace();
                             }
                         }
-                    }
-                    else if(choice.equalsIgnoreCase("S"))
-                    {
+                    } else if (choice.equalsIgnoreCase("S")) {
                         break;
-                    }
-                    else
-                    {
+                    } else if (choice.equalsIgnoreCase("B")) {
+                        return;
+                    } else {
                         System.out.println("Enter valid input!");
                     }
                 }
 
                 System.out.println();
+                while (true) {
+                    System.out.println("[P]revious/[N]ext/[B]ack/[U]nlike Profile/[D]ownload Profile");
 
-                System.out.println("[P]revious/[N]ext/[B]ack");
+                    String choice = sc.nextLine();
 
-                String choice=sc.nextLine();
+                    if (choice.equalsIgnoreCase("P")) {
+                        if(temp.prev==null)
+                        {
+                            System.out.println("No Previous User Data!");
+                            String choice1;
+                            try {
+                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
-                if(choice.equalsIgnoreCase("P"))
-                {
-                    if(temp.prev==null)
-                    {
-                        System.out.println("No Previous User Data!");
-                        System.out.println("Would you like to exit view matches method[B] or go back to current match profile[Y] ?");
-                        String choice1= sc.nextLine();
-                        if(choice1.equalsIgnoreCase("B"))
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            System.out.println("BAck to current match");
-                        }
-                    }
-                    else{
-                        temp=temp.prev;
-                        count--;
-                    }
-
-                } else if (choice.equalsIgnoreCase("N")) {
-                    if(temp.next==null)
-                    {
-                        System.out.println("No Next User Data!");
-                        System.out.println("Would you like to exit view matches method[B] or go back to current match profile[Y] ?");
-                        String choice1= sc.nextLine();
-                        if(choice1.equalsIgnoreCase("B"))
-                        {
-                            break;
-                        }
-                        else
-                        {
+                            } catch (RuntimeException e) {
+                                return;
+                            }
                             System.out.println("Back to current match");
+                            break;
                         }
+                        else{
+                            temp=temp.prev;
+                            count--;
+                            break;
+                        }
+
+                    } else if (choice.equalsIgnoreCase("N")) {
+                        if(temp.next==null)
+                        {
+                            System.out.println("No Next User Data!");
+                            String choice1;
+                            try {
+                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+
+                            } catch (RuntimeException e) {
+                                return;
+                            }
+                            System.out.println("Back to current match");
+                            break;
+                        }
+                        else{
+                            temp=temp.next;
+                            count++;
+                            break;
+                        }
+                    } else if (choice.equalsIgnoreCase("D")) {
+                        new UserManager().generateUserProfile(temp.data, true);
+                    } else if (choice.equalsIgnoreCase("B")) {
+                        return;
+                    } else if (choice.equalsIgnoreCase("U")) {
+                        new LikeManager().UnlikeUser(temp.data.getUsername());
+                        matchEngine.removeUserFromAllLists(temp.data.getUsername());
+                    } else {
+                        System.out.println("Enter valid input!");
                     }
-                    else{
-                        temp=temp.next;
-                        count++;
-                    }
-                }
-                else if(choice.equalsIgnoreCase("B"))
-                {
-                    break;
-                }
-                else
-                {
-                    System.out.println("Enter valid input!");
                 }
             }
         }
@@ -425,55 +433,47 @@ public class MatchDisplay {
             System.out.println("List of User Who Liked you sorted by"+choiceFilter+":");
             else
             System.out.println("List of User Who Liked you sorted by Age And City:");
-            while (true)
-            {
+            while (true) {
                 System.out.println("Contact information is only visible when user likes you back!");
                 System.out.println();
                 System.out.println();
-                System.out.println("# Profile - "+count);
-                System.out.println("Name                : "+temp.data.getFirst_name()+" "+temp.data.getLast_name());
-                System.out.println("Birth Date          : "+temp.data.getBirth_date());
-                System.out.println("Age                 : "+temp.data.getAge()+" years");
-                System.out.println("Height              : "+temp.data.getHeight()+" cm");
-                System.out.println("Gender              : "+temp.data.getGender());
-                System.out.println("Gender Preferences  : "+temp.data.getGender_preference());
-                System.out.println("Dietary Preferences : "+temp.data.getDietary_choice());
-                System.out.println("City                : "+temp.data.getCity());
-                System.out.println("State               : "+temp.data.getState());
-                System.out.println("Bio                 : "+temp.data.getBio());
+                System.out.println("# Profile - " + count);
+                System.out.println("Name                : " + temp.data.getFirst_name() + " " + temp.data.getLast_name());
+                System.out.println("Birth Date          : " + temp.data.getBirth_date());
+                System.out.println("Age                 : " + temp.data.getAge() + " years");
+                System.out.println("Height              : " + temp.data.getHeight() + " cm");
+                System.out.println("Gender              : " + temp.data.getGender());
+                System.out.println("Gender Preferences  : " + temp.data.getGender_preference());
+                System.out.println("Dietary Preferences : " + temp.data.getDietary_choice());
+                System.out.println("City                : " + temp.data.getCity());
+                System.out.println("State               : " + temp.data.getState());
+                System.out.println("Bio                 : " + temp.data.getBio());
                 double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
-                System.out.println("Compatibility Score : " + compatibility + "%");
+                System.out.println("Compatibility Score : " + Math.round(compatibility * 100.0) / 100.0 + "%");
                 System.out.println();
 
-                while(true)
-                {
+                while (true) {
                     System.out.println("Press [O]pen Profile Picture/[S]kip");
-                    String choice=sc.nextLine();
-                    if(choice.equalsIgnoreCase("O"))
-                    {
-                        InputStream fis=temp.data.getImage_stream();
-                        if(fis==null)
-                        {
+                    String choice = sc.nextLine();
+                    if (choice.equalsIgnoreCase("O")) {
+                        InputStream fis = temp.data.getImage_stream();
+                        if (fis == null) {
                             System.out.println("No image provided by user");
                             break;
-                        }
-                        else
-                        {
+                        } else {
                             File dir = new File("C://profile_images");
                             if (!dir.exists()) {
                                 dir.mkdirs();
                             }
 
-                            File imageFile=new File(dir,temp.data.getUsername()+".jpg");
-                            try
-                            {
-                                FileOutputStream fos=new FileOutputStream(imageFile);
-                                byte buffer[]=new byte[1024];
-                                int bytesRead=fis.read(buffer);
-                                while(bytesRead!=-1)
-                                {
-                                    fos.write(buffer,0,bytesRead);
-                                    bytesRead=fis.read(buffer);
+                            File imageFile = new File(dir, temp.data.getUsername() + ".jpg");
+                            try {
+                                FileOutputStream fos = new FileOutputStream(imageFile);
+                                byte buffer[] = new byte[1024];
+                                int bytesRead = fis.read(buffer);
+                                while (bytesRead != -1) {
+                                    fos.write(buffer, 0, bytesRead);
+                                    bytesRead = fis.read(buffer);
                                 }
                                 Desktop.getDesktop().open(imageFile);
                                 break;
@@ -483,75 +483,79 @@ public class MatchDisplay {
                                 e.printStackTrace();
                             }
                         }
-                    }
-                    else if(choice.equalsIgnoreCase("S"))
-                    {
+                    } else if (choice.equalsIgnoreCase("S")) {
                         break;
-                    }
-                    else
-                    {
+                    } else if (choice.equalsIgnoreCase("B")) {
+                        return;
+                    } else {
                         System.out.println("Enter valid input!");
                     }
                 }
 
                 System.out.println();
+                while (true) {
+                    System.out.println("[P]revious/[N]ext/[B]ack/[L]ike Profile/[U]nlike Profile/[D]ownload profile");
 
-                System.out.println("[P]revious/[N]ext/[B]ack/[L]ike Profile");
+                    String choice = sc.nextLine();
 
-                String choice=sc.nextLine();
+                    if (choice.equalsIgnoreCase("P")) {
+                        if(temp.prev==null)
+                        {
+                            System.out.println("No Previous User Data!");
+                            String choice1;
+                            try {
+                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
-                if(choice.equalsIgnoreCase("P"))
-                {
-                    if(temp.prev==null)
-                    {
-                        System.out.println("No Previous User Data!");
-                        System.out.println("Would you like to exit view matches method[B] or go back to current match profile[Y] ?");
-                        String choice1= sc.nextLine();
-                        if(choice1.equalsIgnoreCase("B"))
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            System.out.println("BAck to current match");
-                        }
-                    }
-                    else{
-                        temp=temp.prev;
-                        count--;
-                    }
-
-                } else if (choice.equalsIgnoreCase("N")) {
-                    if(temp.next==null)
-                    {
-                        System.out.println("No Next User Data!");
-                        System.out.println("Would you like to exit view matches method[B] or go back to current match profile[Y] ?");
-                        String choice1= sc.nextLine();
-                        if(choice1.equalsIgnoreCase("B"))
-                        {
-                            break;
-                        }
-                        else
-                        {
+                            } catch (RuntimeException e) {
+                                return;
+                            }
                             System.out.println("Back to current match");
+                            break;
                         }
+                        else{
+                            temp=temp.prev;
+                            count--;
+                            break;
+                        }
+
+                    } else if (choice.equalsIgnoreCase("N")) {
+                        if(temp.next==null)
+                        {
+                            System.out.println("No Next User Data!");
+                            String choice1;
+                            try {
+                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+
+                            } catch (RuntimeException e) {
+                                return;
+                            }
+                            System.out.println("Back to current match");
+                            break;
+                        }
+                        else{
+                            temp=temp.next;
+                            count++;
+                            break;
+                        }
+                    } else if (choice.equalsIgnoreCase("B")) {
+                        return;
+                    } else if (choice.equalsIgnoreCase("L")) {
+                        new LikeManager().LikeUser(temp.data.getUsername());
+                    }else if (choice.equalsIgnoreCase("U")) {
+                        new LikeManager().UnlikeUser(temp.data.getUsername());
+                        matchEngine.removeUserFromAllLists(temp.data.getUsername());
                     }
-                    else{
-                        temp=temp.next;
-                        count++;
+                    else if (choice.equalsIgnoreCase("D")) {
+                        MatchEngine m1 = new MatchEngine();
+                        m1.findMutualLikes();
+                        if (m1.mutualLikes.contains(temp.data))
+                            new UserManager().generateUserProfile(temp.data, true);
+                        else
+                            new UserManager().generateUserProfile(temp.data, false);
                     }
-                }
-                else if(choice.equalsIgnoreCase("B"))
-                {
-                    break;
-                }
-                else if(choice.equalsIgnoreCase("L"))
-                {
-                    new LikeManager().LikeUser(temp.data.getUsername());
-                }
-                else
-                {
-                    System.out.println("Enter valid input!");
+                    else {
+                        System.out.println("Enter valid input!");
+                    }
                 }
             }
         }
@@ -609,55 +613,47 @@ public class MatchDisplay {
             System.out.println("List of Users Liked By You sorted by"+choiceFilter+":");
         else
             System.out.println("List of Users Liked By You sorted by Age And City:");
-            while (true)
-            {
+            while (true) {
                 System.out.println("Contact information is only visible when user likes you back!");
                 System.out.println();
                 System.out.println();
-                System.out.println("# Profile - "+count);
-                System.out.println("Name                : "+temp.data.getFirst_name()+" "+temp.data.getLast_name());
-                System.out.println("Birth Date          : "+temp.data.getBirth_date());
-                System.out.println("Age                 : "+temp.data.getAge()+" years");
-                System.out.println("Height              : "+temp.data.getHeight()+" cm");
-                System.out.println("Gender              : "+temp.data.getGender());
-                System.out.println("Gender Preferences  : "+temp.data.getGender_preference());
-                System.out.println("Dietary Preferences : "+temp.data.getDietary_choice());
-                System.out.println("City                : "+temp.data.getCity());
-                System.out.println("State               : "+temp.data.getState());
-                System.out.println("Bio                 : "+temp.data.getBio());
+                System.out.println("# Profile - " + count);
+                System.out.println("Name                : " + temp.data.getFirst_name() + " " + temp.data.getLast_name());
+                System.out.println("Birth Date          : " + temp.data.getBirth_date());
+                System.out.println("Age                 : " + temp.data.getAge() + " years");
+                System.out.println("Height              : " + temp.data.getHeight() + " cm");
+                System.out.println("Gender              : " + temp.data.getGender());
+                System.out.println("Gender Preferences  : " + temp.data.getGender_preference());
+                System.out.println("Dietary Preferences : " + temp.data.getDietary_choice());
+                System.out.println("City                : " + temp.data.getCity());
+                System.out.println("State               : " + temp.data.getState());
+                System.out.println("Bio                 : " + temp.data.getBio());
                 double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
-                System.out.println("Compatibility Score : " + compatibility + "%");
+                System.out.println("Compatibility Score : " + Math.round(compatibility * 100.0) / 100.0 + "%");
                 System.out.println();
 
-                while(true)
-                {
+                while (true) {
                     System.out.println("Press [O]pen Profile Picture/[S]kip");
-                    String choice=sc.nextLine();
-                    if(choice.equalsIgnoreCase("O"))
-                    {
-                        InputStream fis=temp.data.getImage_stream();
-                        if(fis==null)
-                        {
+                    String choice = sc.nextLine();
+                    if (choice.equalsIgnoreCase("O")) {
+                        InputStream fis = temp.data.getImage_stream();
+                        if (fis == null) {
                             System.out.println("No image provided by user");
                             break;
-                        }
-                        else
-                        {
+                        } else {
                             File dir = new File("C://profile_images");
                             if (!dir.exists()) {
                                 dir.mkdirs();
                             }
 
-                            File imageFile=new File(dir,temp.data.getUsername()+".jpg");
-                            try
-                            {
-                                FileOutputStream fos=new FileOutputStream(imageFile);
-                                byte buffer[]=new byte[1024];
-                                int bytesRead=fis.read(buffer);
-                                while(bytesRead!=-1)
-                                {
-                                    fos.write(buffer,0,bytesRead);
-                                    bytesRead=fis.read(buffer);
+                            File imageFile = new File(dir, temp.data.getUsername() + ".jpg");
+                            try {
+                                FileOutputStream fos = new FileOutputStream(imageFile);
+                                byte buffer[] = new byte[1024];
+                                int bytesRead = fis.read(buffer);
+                                while (bytesRead != -1) {
+                                    fos.write(buffer, 0, bytesRead);
+                                    bytesRead = fis.read(buffer);
                                 }
                                 Desktop.getDesktop().open(imageFile);
                                 break;
@@ -667,71 +663,76 @@ public class MatchDisplay {
                                 e.printStackTrace();
                             }
                         }
-                    }
-                    else if(choice.equalsIgnoreCase("S"))
-                    {
+                    } else if (choice.equalsIgnoreCase("S")) {
                         break;
-                    }
-                    else
-                    {
+                    } else if (choice.equalsIgnoreCase("B")) {
+                        return;
+                    } else {
                         System.out.println("Enter valid input!");
                     }
                 }
 
                 System.out.println();
+                while (true) {
+                    System.out.println("[P]revious/[N]ext/[B]ack/[U]nlike Profile/[D]ownload profile");
 
-                System.out.println("[P]revious/[N]ext/[B]ack");
+                    String choice = sc.nextLine();
 
-                String choice=sc.nextLine();
-
-                if(choice.equalsIgnoreCase("P"))
-                {
-                    if(temp.prev==null)
-                    {
-                        System.out.println("No Previous User Data!");
-                        System.out.println("Would you like to exit view matches method[B] or go back to current match profile[Y] ?");
-                        String choice1= sc.nextLine();
-                        if(choice1.equalsIgnoreCase("B"))
+                    if (choice.equalsIgnoreCase("P")) {
+                        if(temp.prev==null)
                         {
+                            System.out.println("No Previous User Data!");
+                            String choice1;
+                            try {
+                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+
+                            } catch (RuntimeException e) {
+                                return;
+                            }
+                            System.out.println("Back to current match");
                             break;
                         }
-                        else
-                        {
-                            System.out.println("Back to current match");
-                        }
-                    }
-                    else{
-                        temp=temp.prev;
-                        count--;
-                    }
-
-                } else if (choice.equalsIgnoreCase("N")) {
-                    if(temp.next==null)
-                    {
-                        System.out.println("No Next User Data!");
-                        System.out.println("Would you like to exit view matches method[B] or go back to current match profile[Y] ?");
-                        String choice1= sc.nextLine();
-                        if(choice1.equalsIgnoreCase("B"))
-                        {
+                        else{
+                            temp=temp.prev;
+                            count--;
                             break;
                         }
-                        else
+
+                    } else if (choice.equalsIgnoreCase("N")) {
+                        if(temp.next==null)
                         {
+                            System.out.println("No Next User Data!");
+                            String choice1;
+                            try {
+                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+
+                            } catch (RuntimeException e) {
+                                return;
+                            }
                             System.out.println("Back to current match");
+                            break;
                         }
+                        else{
+                            temp=temp.next;
+                            count++;
+                            break;
+                        }
+                    } else if (choice.equalsIgnoreCase("D")) {
+                        MatchEngine m1 = new MatchEngine();
+                        m1.findMutualLikes();
+                        if (m1.mutualLikes.contains(temp.data))
+                            new UserManager().generateUserProfile(temp.data, true);
+                        else
+                            new UserManager().generateUserProfile(temp.data, false);
+                    }else if (choice.equalsIgnoreCase("U")) {
+                        new LikeManager().UnlikeUser(temp.data.getUsername());
+                        matchEngine.removeUserFromAllLists(temp.data.getUsername());
                     }
-                    else{
-                        temp=temp.next;
-                        count++;
+                    else if (choice.equalsIgnoreCase("B")) {
+                        return;
+                    } else {
+                        System.out.println("Enter valid input!");
                     }
-                }
-                else if(choice.equalsIgnoreCase("B"))
-                {
-                    break;
-                }
-                else
-                {
-                    System.out.println("Enter valid input!");
                 }
             }
         }

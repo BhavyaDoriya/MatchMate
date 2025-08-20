@@ -183,13 +183,23 @@ public class User {
         this.password = password;
     }
 
-
+    @Override
+    public boolean equals(Object obj) {
+        User u=(User)obj;
+        if(this.username.equals(u.username))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     public static int getUserAge(String birthDateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate birthDate = LocalDate.parse(birthDateString, formatter);
         LocalDate currentDate = LocalDate.now();
-
             return Period.between(birthDate, currentDate).getYears();
 
     }

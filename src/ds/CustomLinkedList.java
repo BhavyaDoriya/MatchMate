@@ -19,20 +19,6 @@ public class CustomLinkedList
 
     public Node first=null;
 
-   public void insertAtFirst(User data)
-    {
-        Node n=new Node(data);
-        if(first==null)
-        {
-            first=n;
-        }
-        else
-        {
-            n.next=first;
-            first.prev=n;
-            first=n;
-        }
-    }
 
    public void insertAtLast(User data)
     {
@@ -52,90 +38,51 @@ public class CustomLinkedList
             temp.next=n;
         }
     }
+    public void removeByUsername(String username) {
+        if (this.first != null) {
+            Node temp = this.first;
+            if (this.first.data.getUsername().equals(username) && this.first.next == null) {
+                this.first = null;
+            } else if (this.first.data.getUsername().equals(username)) {
+                Node del = this.first;
+                this.first = this.first.next;
+                this.first.prev = null;
+                del.next = null;
 
-   public Node deleteAtFirst()
-    {
-        Node returnNode=first;
-        if(first==null)
-        {
-            System.out.println("No User");
-            return returnNode;
-        }
-        else if(first.next==null)
-        {
-            first=null;
-            return returnNode;
-        }
-        else
-        {
-            Node temp=first.next;
-            first.next.prev=null;
-            first.next=null;
-            first=temp;
-            return returnNode;
-        }
-
-    }
-
-   public Node remove(User data)
-    {
-        if(first==null)
-        {
-            System.out.println("No User");
-            return null;
-        }
-        else if(first.data==data)
-        {
-            return deleteAtFirst();
-        }
-        else
-        {
-            Node temp=first;
-            boolean check=false;
-            while(temp!=null)
-            {
-                if(temp.data==data)
-                {
-                    check=true;
-                    break;
+            } else {
+                while(temp != null && !temp.data.getUsername().equals(username)) {
+                    temp = temp.next;
                 }
-                temp=temp.next;
-            }
-            if(!check)
-            {
-                System.out.println("No such user exist");
-                return null;
-            }
-            else
-            {
-                Node returnNode=temp;
-                temp=temp.prev;
-                temp.next=null;
-                if(returnNode.next!=null)
-                {
-                    returnNode.next.prev=null;
+
+                if (temp != null) {
+                    if (temp.next != null) {
+                        temp.prev.next = temp.next;
+                        temp.next.prev = temp.prev;
+
+                    } else {
+                        temp.prev.next = null;
+
+                    }
+
+                    temp.next = null;
+                    temp.prev = null;
+
                 }
-                returnNode.next=null;
-                returnNode.prev=null;
-                return returnNode;
             }
         }
     }
-    public User getNext(Node temp)
+    public boolean contains(User u)
     {
-        if(temp.next!=null)
+        Node temp=first;
+        while (temp!=null)
         {
-            return temp.next.data;
+            if(temp.data.equals(u))
+            {
+                return true;
+            }
+            temp=temp.next;
         }
-        else
-        {
-            return null;
-        }
-    }
-    public static void main(String[] args)
-    {
-        Scanner sc=new Scanner(System.in);
-        CustomLinkedList o=new CustomLinkedList();
+        return false;
     }
 
 }

@@ -3,6 +3,7 @@ import ExceptionHandling.GoBackException;
 import ds.*;
 import user.Session;
 import user.UserManager;
+import util.ConsoleColors;
 import util.DatabaseConnector;
 import util.InputUtils;
 
@@ -18,7 +19,7 @@ public class MatchDisplay {
     MatchEngine matchEngine=new MatchEngine();
     public  void displayMatches() throws GoBackException
     {
-        String choiceFilter= InputUtils.promptUntilValid("Would you like to filter matches by [Age/City] or [Both]? or [No Filter]:",input->input.equalsIgnoreCase("Age")||input.equalsIgnoreCase("City")||input.equalsIgnoreCase("Both")||input.equalsIgnoreCase("No Filter")||input.equalsIgnoreCase("Nofilter"),()->new RuntimeException("blah blah blah"));
+        String choiceFilter= InputUtils.promptUntilValid(ConsoleColors.YELLOW_BOLD+"Would you like to filter matches by [Age/City] or [Both]? or [No Filter]:"+ConsoleColors.RESET,input->input.equalsIgnoreCase("Age")||input.equalsIgnoreCase("City")||input.equalsIgnoreCase("Both")||input.equalsIgnoreCase("No Filter")||input.equalsIgnoreCase("Nofilter"),()->new RuntimeException("blah blah blah"));
         CustomLinkedList.Node temp=null;
         if(choiceFilter.equalsIgnoreCase("NoFilter")||choiceFilter.equalsIgnoreCase("No Filter"))
         {
@@ -38,7 +39,7 @@ public class MatchDisplay {
                 String city = InputUtils.promptUntilValid(
                         "Enter city: ",
                         s -> !s.isEmpty(),
-                        () -> new GoBackException("User chose to go back!")
+                        () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back!"+ConsoleColors.RESET)
                 );
                 matchEngine.findMatchesByCity(city);
                 temp=matchEngine.matchesByCity.first;
@@ -49,7 +50,7 @@ public class MatchDisplay {
                 String city = InputUtils.promptUntilValid(
                         "Enter city: ",
                         s -> !s.isEmpty(),
-                        () -> new GoBackException("User chose to go back!")
+                        () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back!"+ConsoleColors.RESET)
                 );
                 matchEngine.findMatchesByCityANDAge(startAgeOfRange,city);
                 temp=matchEngine.matchesByCityANDAge.first;
@@ -58,40 +59,42 @@ public class MatchDisplay {
         int count=1;
         if(temp==null)
         {
-            System.out.println("No matches found!");
+            System.out.println(ConsoleColors.YELLOW+"No matches found!"+ConsoleColors.RESET);
         }
         else
         {
+                System.out.println(ConsoleColors.YELLOW+"List of Matches:"+ConsoleColors.RESET);
+                System.out.println();
                 while (true)
                 {
-                    System.out.println("Contact information is only visible when user likes you back!");
+                    System.out.println(ConsoleColors.YELLOW+"NOTE:Contact information is only visible when user likes you back!"+ConsoleColors.RESET);
+
                     System.out.println();
-                    System.out.println();
-                    System.out.println("# Profile - "+count);
-                    System.out.println("Name                : "+temp.data.getFirst_name()+" "+temp.data.getLast_name());
-                    System.out.println("Birth Date          : "+temp.data.getBirth_date());
-                    System.out.println("Age                 : "+temp.data.getAge()+" years");
-                    System.out.println("Height              : "+temp.data.getHeight()+" cm");
-                    System.out.println("Gender              : "+temp.data.getGender());
-                    System.out.println("Gender Preferences  : "+temp.data.getGender_preference());
-                    System.out.println("Dietary Preferences : "+temp.data.getDietary_choice());
-                    System.out.println("City                : "+temp.data.getCity());
-                    System.out.println("State               : "+temp.data.getState());
-                    System.out.println("Bio                 : "+temp.data.getBio());
-                    double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
-                    System.out.println("Compatibility Score : " + Math.round(compatibility*100.0)/100.0 + "%");
+                    System.out.println(ConsoleColors.GREEN_BOLD+"# Profile - "+count+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"Name                : "+temp.data.getFirst_name()+" "+temp.data.getLast_name()+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"Birth Date          : "+temp.data.getBirth_date()+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"Age                 : "+temp.data.getAge()+" years"+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"Height              : "+temp.data.getHeight()+" cm"+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"Gender              : "+temp.data.getGender()+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"Gender Preferences  : "+temp.data.getGender_preference()+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"Dietary Preferences : "+temp.data.getDietary_choice()+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"City                : "+temp.data.getCity()+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"State               : "+temp.data.getState()+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"Bio                 : "+temp.data.getBio()+ConsoleColors.RESET);
+                    double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername()+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.CYAN+"Compatibility Score : " + Math.round(compatibility*100.0)/100.0 + "%"+ConsoleColors.RESET);
                     System.out.println();
 
                     while(true)
                     {
-                        System.out.println("Press [O]pen Profile Picture/[S]kip");
+                        System.out.println(ConsoleColors.YELLOW+"Press [O]pen Profile Picture/[S]kip"+ConsoleColors.RESET);
                         String choice=sc.nextLine();
                         if(choice.equalsIgnoreCase("O"))
                         {
                             InputStream fis=temp.data.getImage_stream();
                             if(fis==null)
                             {
-                                System.out.println("No image provided by user");
+                                System.out.println(ConsoleColors.YELLOW+"No image provided by user"+ConsoleColors.RESET);
                                 break;
                             }
                             else
@@ -131,13 +134,13 @@ public class MatchDisplay {
                         }
                         else
                         {
-                            System.out.println("Enter valid input!");
+                            System.out.println(ConsoleColors.RED+"Enter valid input!"+ConsoleColors.RESET);
                         }
                     }
 
                     System.out.println();
                     while (true){
-                    System.out.println("[P]revious/[N]ext/[B]ack/[L]ike Profile/[U]nlike Profile/[D]ownload profile");
+                    System.out.println(ConsoleColors.YELLOW+"[P]revious/[N]ext/[B]ack/[L]ike Profile/[U]nlike Profile/[D]ownload profile"+ConsoleColors.RESET);
 
                     String choice=sc.nextLine();
 
@@ -145,15 +148,15 @@ public class MatchDisplay {
                     {
                         if(temp.prev==null)
                         {
-                            System.out.println("No Previous User Data!");
+                            System.out.println(ConsoleColors.YELLOW+"No Previous User Data!"+ConsoleColors.RESET);
                             String choice1;
                             try {
-                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+                                choice1= InputUtils.promptUntilValid(ConsoleColors.YELLOW+"Press [B] to go back to filtration page or press [C] to go back to current match profile ?"+ConsoleColors.RESET,s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
                             } catch (RuntimeException e) {
                                 return;
                             }
-                                System.out.println("Back to current match");
+                                System.out.println(ConsoleColors.GREEN+"Back to current match"+ConsoleColors.RESET);
                                 break;
                         }
                         else{
@@ -165,15 +168,15 @@ public class MatchDisplay {
                     } else if (choice.equalsIgnoreCase("N")) {
                         if(temp.next==null)
                         {
-                            System.out.println("No Next User Data!");
+                            System.out.println(ConsoleColors.YELLOW+"No Next User Data!"+ConsoleColors.RESET);
                             String choice1;
                             try {
-                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+                                choice1= InputUtils.promptUntilValid(ConsoleColors.YELLOW+"Press [B] to go back to filtration page or press [C] to go back to current match profile ?"+ConsoleColors.RESET,s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
                             } catch (RuntimeException e) {
                                 return;
                             }
-                            System.out.println("Back to current match");
+                            System.out.println(ConsoleColors.GREEN+"Back to current match"+ConsoleColors.RESET);
                             break;
                         }
                         else{
@@ -203,7 +206,7 @@ public class MatchDisplay {
                     }
                     else
                     {
-                        System.out.println("Enter valid input!");
+                        System.out.println(ConsoleColors.RED+"Enter valid input!"+ConsoleColors.RESET);
                     }
                 }
             }
@@ -212,7 +215,7 @@ public class MatchDisplay {
     }
     public void displayMutualLikes()
     {
-        String choiceFilter= InputUtils.promptUntilValid("Would you like to filter matches by [Age/City] or [Both]? or [No Filter]:",input->input.equalsIgnoreCase("Age")||input.equalsIgnoreCase("City")||input.equalsIgnoreCase("Both")||input.equalsIgnoreCase("No Filter")||input.equalsIgnoreCase("Nofilter"),()->new RuntimeException("blah blah blah"));
+        String choiceFilter= InputUtils.promptUntilValid(ConsoleColors.YELLOW_BOLD+"Would you like to filter matches by [Age/City] or [Both]? or [No Filter]:"+ConsoleColors.RESET,input->input.equalsIgnoreCase("Age")||input.equalsIgnoreCase("City")||input.equalsIgnoreCase("Both")||input.equalsIgnoreCase("No Filter")||input.equalsIgnoreCase("Nofilter"),()->new RuntimeException("blah blah blah"));
         CustomLinkedList.Node temp=null;
         if(choiceFilter.equalsIgnoreCase("NoFilter")||choiceFilter.equalsIgnoreCase("No Filter"))
         {
@@ -231,7 +234,7 @@ public class MatchDisplay {
             String city = InputUtils.promptUntilValid(
                     "Enter city: ",
                     s -> !s.isEmpty(),
-                    () -> new GoBackException("User chose to go back!")
+                    () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back!"+ConsoleColors.RESET)
             );
             matchEngine.findMutualLikesSortedByCity(city);
             temp=matchEngine.mutualLikesSortedByCity.first;
@@ -242,7 +245,7 @@ public class MatchDisplay {
             String city = InputUtils.promptUntilValid(
                     "Enter city: ",
                     s -> !s.isEmpty(),
-                    () -> new GoBackException("User chose to go back!")
+                    () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back!"+ConsoleColors.RESET)
             );
             matchEngine.findMutualLikesSortedByCityANDAge(startAgeOfRange,city);
             temp=matchEngine.mutualLikesSortedByCityANDAge.first;
@@ -251,44 +254,44 @@ public class MatchDisplay {
         int count=1;
         if(temp==null)
         {
-            System.out.println("No mutual likes found!");
+            System.out.println(ConsoleColors.YELLOW+"No mutual likes found!"+ConsoleColors.RESET);
             return;
         }
         else
         {   if(choiceFilter.equalsIgnoreCase("NOFilter")||choiceFilter.equalsIgnoreCase("No Filter"))
-            System.out.println("List of Mutual Likes :");
+            System.out.println(ConsoleColors.YELLOW+"List of Mutual Likes :"+ConsoleColors.RESET);
         else if(!choiceFilter.equalsIgnoreCase("Both"))
-            System.out.println("List of Mutual Likes sorted by"+choiceFilter+":");
+            System.out.println(ConsoleColors.YELLOW+"List of Mutual Likes sorted by"+choiceFilter+":"+ConsoleColors.RESET);
         else
-            System.out.println("List of Mutual Likes sorted by Age And City:");
+            System.out.println(ConsoleColors.YELLOW+"List of Mutual Likes sorted by Age And City:"+ConsoleColors.RESET);
+            System.out.println();
             while (true) {
-                System.out.println("Contact information is visible Now!");
+                System.out.println(ConsoleColors.YELLOW+"Contact information is visible Now!"+ConsoleColors.RESET);
                 System.out.println();
-                System.out.println();
-                System.out.println("# Profile - " + count);
-                System.out.println("Name                : " + temp.data.getFirst_name() + " " + temp.data.getLast_name());
-                System.out.println("Birth Date          : " + temp.data.getBirth_date());
-                System.out.println("Age                 : " + temp.data.getAge() + " years");
-                System.out.println("Height              : " + temp.data.getHeight() + " cm");
-                System.out.println("Gender              : " + temp.data.getGender());
-                System.out.println("Gender Preferences  : " + temp.data.getGender_preference());
-                System.out.println("Dietary Preferences : " + temp.data.getDietary_choice());
-                System.out.println("City                : " + temp.data.getCity());
-                System.out.println("State               : " + temp.data.getState());
-                System.out.println("Bio                 : " + temp.data.getBio());
-                System.out.println("Contact             : " + temp.data.getMobile_number());
-                System.out.println("Email               : " + temp.data.getEmail());
+                System.out.println(ConsoleColors.GREEN_BOLD+"# Profile - "+count+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Name                : "+temp.data.getFirst_name()+" "+temp.data.getLast_name()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Birth Date          : "+temp.data.getBirth_date()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Age                 : "+temp.data.getAge()+" years"+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Height              : "+temp.data.getHeight()+" cm"+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Gender              : "+temp.data.getGender()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Gender Preferences  : "+temp.data.getGender_preference()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Dietary Preferences : "+temp.data.getDietary_choice()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"City                : "+temp.data.getCity()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"State               : "+temp.data.getState()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Bio                 : "+temp.data.getBio()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Contact             : " + temp.data.getMobile_number()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Email               : " + temp.data.getEmail()+ConsoleColors.RESET);
                 double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
-                System.out.println("Compatibility Score : " + Math.round(compatibility * 100.0) / 100.0 + "%");
+                System.out.println(ConsoleColors.CYAN+"Compatibility Score : " + Math.round(compatibility * 100.0) / 100.0 + "%"+ConsoleColors.RESET);
                 System.out.println();
 
                 while (true) {
-                    System.out.println("Press [O]pen Profile Picture/[S]kip");
+                    System.out.println(ConsoleColors.YELLOW+"Press [O]pen Profile Picture/[S]kip"+ConsoleColors.RESET);
                     String choice = sc.nextLine();
                     if (choice.equalsIgnoreCase("O")) {
                         InputStream fis = temp.data.getImage_stream();
                         if (fis == null) {
-                            System.out.println("No image provided by user");
+                            System.out.println(ConsoleColors.YELLOW+"No image provided by user"+ConsoleColors.RESET);
                             break;
                         } else {
                             File dir = new File("C://profile_images");
@@ -318,28 +321,28 @@ public class MatchDisplay {
                     } else if (choice.equalsIgnoreCase("B")) {
                         return;
                     } else {
-                        System.out.println("Enter valid input!");
+                        System.out.println(ConsoleColors.RED+"Enter valid input!"+ConsoleColors.RESET);
                     }
                 }
 
                 System.out.println();
                 while (true) {
-                    System.out.println("[P]revious/[N]ext/[B]ack/[U]nlike Profile/[D]ownload Profile");
+                    System.out.println(ConsoleColors.YELLOW+"[P]revious/[N]ext/[B]ack/[U]nlike Profile/[D]ownload Profile"+ConsoleColors.RESET);
 
                     String choice = sc.nextLine();
 
                     if (choice.equalsIgnoreCase("P")) {
                         if(temp.prev==null)
                         {
-                            System.out.println("No Previous User Data!");
+                            System.out.println(ConsoleColors.YELLOW+"No Previous User Data!"+ConsoleColors.RESET);
                             String choice1;
                             try {
-                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+                                choice1= InputUtils.promptUntilValid(ConsoleColors.YELLOW+"Press [B] to go back to filtration page or press [C] to go back to current match profile ?"+ConsoleColors.YELLOW,s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
                             } catch (RuntimeException e) {
                                 return;
                             }
-                            System.out.println("Back to current match");
+                            System.out.println(ConsoleColors.GREEN+"Back to current match"+ConsoleColors.RESET);
                             break;
                         }
                         else{
@@ -351,15 +354,15 @@ public class MatchDisplay {
                     } else if (choice.equalsIgnoreCase("N")) {
                         if(temp.next==null)
                         {
-                            System.out.println("No Next User Data!");
+                            System.out.println(ConsoleColors.YELLOW+"No Next User Data!"+ConsoleColors.RESET);
                             String choice1;
                             try {
-                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+                                choice1= InputUtils.promptUntilValid(ConsoleColors.YELLOW+"Press [B] to go back to filtration page or press [C] to go back to current match profile ?"+ConsoleColors.RESET,s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
                             } catch (RuntimeException e) {
                                 return;
                             }
-                            System.out.println("Back to current match");
+                            System.out.println(ConsoleColors.GREEN+"Back to current match"+ConsoleColors.RESET);
                             break;
                         }
                         else{
@@ -375,7 +378,7 @@ public class MatchDisplay {
                         new LikeManager().UnlikeUser(temp.data.getUsername());
                         matchEngine.removeUserFromAllLists(temp.data.getUsername());
                     } else {
-                        System.out.println("Enter valid input!");
+                        System.out.println(ConsoleColors.RED+"Enter valid input!"+ConsoleColors.RESET);
                     }
                 }
             }
@@ -383,7 +386,7 @@ public class MatchDisplay {
     }
     public void displayWhoLikedMe()
     {
-        String choiceFilter= InputUtils.promptUntilValid("Would you like to filter matches by [Age/City] or [Both]? or [No Filter]:",input->input.equalsIgnoreCase("Age")||input.equalsIgnoreCase("City")||input.equalsIgnoreCase("Both")||input.equalsIgnoreCase("No Filter")||input.equalsIgnoreCase("Nofilter"),()->new RuntimeException("blah blah blah"));
+        String choiceFilter= InputUtils.promptUntilValid(ConsoleColors.YELLOW_BOLD+"Would you like to filter matches by [Age/City] or [Both]? or [No Filter]:"+ConsoleColors.RESET,input->input.equalsIgnoreCase("Age")||input.equalsIgnoreCase("City")||input.equalsIgnoreCase("Both")||input.equalsIgnoreCase("No Filter")||input.equalsIgnoreCase("Nofilter"),()->new RuntimeException("blah blah blah"));
         CustomLinkedList.Node temp=null;
         if(choiceFilter.equalsIgnoreCase("NoFilter")||choiceFilter.equalsIgnoreCase("No Filter"))
         {
@@ -403,7 +406,7 @@ public class MatchDisplay {
             String city = InputUtils.promptUntilValid(
                     "Enter city: ",
                     s -> !s.isEmpty(),
-                    () -> new GoBackException("User chose to go back!")
+                    () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back!"+ConsoleColors.RESET)
             );
             matchEngine.findUsersWhoLikedMeSortedByCity(city);
             temp=matchEngine.likedUserSortedByCity.first;
@@ -414,7 +417,7 @@ public class MatchDisplay {
             String city = InputUtils.promptUntilValid(
                     "Enter city: ",
                     s -> !s.isEmpty(),
-                    () -> new GoBackException("User chose to go back!")
+                    () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back!"+ConsoleColors.RESET)
             );
             matchEngine.findUsersWhoLikedMeSortedByCityANDAge(startAgeOfRange,city);
             temp=matchEngine.likedUserSortedByCityANDAge.first;
@@ -423,42 +426,42 @@ public class MatchDisplay {
         int count=1;
         if(temp==null)
         {
-            System.out.println("No likes found!");
+            System.out.println(ConsoleColors.YELLOW+"No likes found!"+ConsoleColors.RESET);
             return;
         }
         else
         {   if(choiceFilter.equalsIgnoreCase("NOFilter")||choiceFilter.equalsIgnoreCase("No Filter"))
-            System.out.println("List of User Who Liked you :");
+            System.out.println(ConsoleColors.YELLOW+"List of User Who Liked you :"+ConsoleColors.RESET);
             else if(!choiceFilter.equalsIgnoreCase("Both"))
-            System.out.println("List of User Who Liked you sorted by"+choiceFilter+":");
+            System.out.println(ConsoleColors.YELLOW+"List of User Who Liked you sorted by"+choiceFilter+":"+ConsoleColors.RESET);
             else
-            System.out.println("List of User Who Liked you sorted by Age And City:");
+            System.out.println(ConsoleColors.YELLOW+"List of User Who Liked you sorted by Age And City:"+ConsoleColors.RESET);
+            System.out.println();
             while (true) {
-                System.out.println("Contact information is only visible when user likes you back!");
+                System.out.println(ConsoleColors.YELLOW+"Contact information is only visible when user likes you back!"+ConsoleColors.RESET);
                 System.out.println();
-                System.out.println();
-                System.out.println("# Profile - " + count);
-                System.out.println("Name                : " + temp.data.getFirst_name() + " " + temp.data.getLast_name());
-                System.out.println("Birth Date          : " + temp.data.getBirth_date());
-                System.out.println("Age                 : " + temp.data.getAge() + " years");
-                System.out.println("Height              : " + temp.data.getHeight() + " cm");
-                System.out.println("Gender              : " + temp.data.getGender());
-                System.out.println("Gender Preferences  : " + temp.data.getGender_preference());
-                System.out.println("Dietary Preferences : " + temp.data.getDietary_choice());
-                System.out.println("City                : " + temp.data.getCity());
-                System.out.println("State               : " + temp.data.getState());
-                System.out.println("Bio                 : " + temp.data.getBio());
-                double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
-                System.out.println("Compatibility Score : " + Math.round(compatibility * 100.0) / 100.0 + "%");
+                System.out.println(ConsoleColors.GREEN_BOLD+"# Profile - "+count+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Name                : "+temp.data.getFirst_name()+" "+temp.data.getLast_name()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Birth Date          : "+temp.data.getBirth_date()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Age                 : "+temp.data.getAge()+" years"+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Height              : "+temp.data.getHeight()+" cm"+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Gender              : "+temp.data.getGender()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Gender Preferences  : "+temp.data.getGender_preference()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Dietary Preferences : "+temp.data.getDietary_choice()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"City                : "+temp.data.getCity()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"State               : "+temp.data.getState()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Bio                 : "+temp.data.getBio()+ConsoleColors.RESET);
+                double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Compatibility Score : " + Math.round(compatibility*100.0)/100.0 + "%"+ConsoleColors.RESET);
                 System.out.println();
 
                 while (true) {
-                    System.out.println("Press [O]pen Profile Picture/[S]kip");
+                    System.out.println(ConsoleColors.YELLOW+"Press [O]pen Profile Picture/[S]kip"+ConsoleColors.RESET);
                     String choice = sc.nextLine();
                     if (choice.equalsIgnoreCase("O")) {
                         InputStream fis = temp.data.getImage_stream();
                         if (fis == null) {
-                            System.out.println("No image provided by user");
+                            System.out.println(ConsoleColors.YELLOW+"No image provided by user"+ConsoleColors.RESET);
                             break;
                         } else {
                             File dir = new File("C://profile_images");
@@ -488,28 +491,28 @@ public class MatchDisplay {
                     } else if (choice.equalsIgnoreCase("B")) {
                         return;
                     } else {
-                        System.out.println("Enter valid input!");
+                        System.out.println(ConsoleColors.RED+"Enter valid input!"+ConsoleColors.RESET);
                     }
                 }
 
                 System.out.println();
                 while (true) {
-                    System.out.println("[P]revious/[N]ext/[B]ack/[L]ike Profile/[U]nlike Profile/[D]ownload profile");
+                    System.out.println(ConsoleColors.YELLOW+"[P]revious/[N]ext/[B]ack/[L]ike Profile/[U]nlike Profile/[D]ownload profile"+ConsoleColors.RESET);
 
                     String choice = sc.nextLine();
 
                     if (choice.equalsIgnoreCase("P")) {
                         if(temp.prev==null)
                         {
-                            System.out.println("No Previous User Data!");
+                            System.out.println(ConsoleColors.YELLOW+"No Previous User Data!"+ConsoleColors.RESET);
                             String choice1;
                             try {
-                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+                                choice1= InputUtils.promptUntilValid(ConsoleColors.YELLOW+"Press [B] to go back to filtration page or press [C] to go back to current match profile ?"+ConsoleColors.RESET,s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
                             } catch (RuntimeException e) {
                                 return;
                             }
-                            System.out.println("Back to current match");
+                            System.out.println(ConsoleColors.GREEN+"Back to current match"+ConsoleColors.RESET);
                             break;
                         }
                         else{
@@ -521,15 +524,15 @@ public class MatchDisplay {
                     } else if (choice.equalsIgnoreCase("N")) {
                         if(temp.next==null)
                         {
-                            System.out.println("No Next User Data!");
+                            System.out.println(ConsoleColors.YELLOW+"No Next User Data!"+ConsoleColors.RESET);
                             String choice1;
                             try {
-                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+                                choice1= InputUtils.promptUntilValid(ConsoleColors.YELLOW+"Press [B] to go back to filtration page or press [C] to go back to current match profile ?"+ConsoleColors.RESET,s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
                             } catch (RuntimeException e) {
                                 return;
                             }
-                            System.out.println("Back to current match");
+                            System.out.println(ConsoleColors.GREEN+"Back to current match"+ConsoleColors.RESET);
                             break;
                         }
                         else{
@@ -554,7 +557,7 @@ public class MatchDisplay {
                             new UserManager().generateUserProfile(temp.data, false);
                     }
                     else {
-                        System.out.println("Enter valid input!");
+                        System.out.println(ConsoleColors.RED+"Enter valid input!"+ConsoleColors.RESET);
                     }
                 }
             }
@@ -563,7 +566,7 @@ public class MatchDisplay {
 
     public void displayShortlisted()
     {
-        String choiceFilter= InputUtils.promptUntilValid("Would you like to filter by [Age/City] or [Both]? or [No Filter]:",input->input.equalsIgnoreCase("Age")||input.equalsIgnoreCase("City")||input.equalsIgnoreCase("Both")||input.equalsIgnoreCase("No Filter")||input.equalsIgnoreCase("Nofilter"),()->new RuntimeException("blah blah blah"));
+        String choiceFilter= InputUtils.promptUntilValid(ConsoleColors.YELLOW_BOLD+"Would you like to filter matches by [Age/City] or [Both]? or [No Filter]:"+ConsoleColors.RESET,input->input.equalsIgnoreCase("Age")||input.equalsIgnoreCase("City")||input.equalsIgnoreCase("Both")||input.equalsIgnoreCase("No Filter")||input.equalsIgnoreCase("Nofilter"),()->new RuntimeException("blah blah blah"));
         CustomLinkedList.Node temp=null;
         if(choiceFilter.equalsIgnoreCase("NoFilter")||choiceFilter.equalsIgnoreCase("No Filter"))
         {
@@ -583,7 +586,7 @@ public class MatchDisplay {
             String city = InputUtils.promptUntilValid(
                     "Enter city: ",
                     s -> !s.isEmpty(),
-                    () -> new GoBackException("User chose to go back!")
+                    () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back!"+ConsoleColors.RESET)
             );
             matchEngine.shortListedProfileSortedByCity(city);
             temp=matchEngine.likedByUserSortedByCity.first;
@@ -594,7 +597,7 @@ public class MatchDisplay {
             String city = InputUtils.promptUntilValid(
                     "Enter city: ",
                     s -> !s.isEmpty(),
-                    () -> new GoBackException("User chose to go back!")
+                    () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back!"+ConsoleColors.RESET)
             );
             matchEngine.shortListedProfileSortedByCityANDAge(startAgeOfRange,city);
             temp=matchEngine.likedByUserSortedByCityANDAge.first;
@@ -603,42 +606,43 @@ public class MatchDisplay {
         int count=1;
         if(temp==null)
         {
-            System.out.println("No likes found!");
+            System.out.println(ConsoleColors.YELLOW+"No likes found!"+ConsoleColors.RESET);
             return;
         }
         else
         {   if(choiceFilter.equalsIgnoreCase("NOFilter")||choiceFilter.equalsIgnoreCase("No Filter"))
-            System.out.println("List of Users Liked By You :");
+            System.out.println(ConsoleColors.YELLOW+"List of Users Liked By You :"+ConsoleColors.RESET);
         else if(!choiceFilter.equalsIgnoreCase("Both"))
-            System.out.println("List of Users Liked By You sorted by"+choiceFilter+":");
+            System.out.println(ConsoleColors.YELLOW+"List of Users Liked By You sorted by"+choiceFilter+":"+ConsoleColors.RESET);
         else
-            System.out.println("List of Users Liked By You sorted by Age And City:");
+            System.out.println(ConsoleColors.YELLOW+"List of Users Liked By You sorted by Age And City:"+ConsoleColors.RESET);
+            System.out.println();
             while (true) {
-                System.out.println("Contact information is only visible when user likes you back!");
+                System.out.println(ConsoleColors.YELLOW+"Contact information is only visible when user likes you back!"+ConsoleColors.RESET);
                 System.out.println();
-                System.out.println();
-                System.out.println("# Profile - " + count);
-                System.out.println("Name                : " + temp.data.getFirst_name() + " " + temp.data.getLast_name());
-                System.out.println("Birth Date          : " + temp.data.getBirth_date());
-                System.out.println("Age                 : " + temp.data.getAge() + " years");
-                System.out.println("Height              : " + temp.data.getHeight() + " cm");
-                System.out.println("Gender              : " + temp.data.getGender());
-                System.out.println("Gender Preferences  : " + temp.data.getGender_preference());
-                System.out.println("Dietary Preferences : " + temp.data.getDietary_choice());
-                System.out.println("City                : " + temp.data.getCity());
-                System.out.println("State               : " + temp.data.getState());
-                System.out.println("Bio                 : " + temp.data.getBio());
-                double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername());
+                System.out.println(ConsoleColors.GREEN_BOLD+"# Profile - "+count+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Name                : "+temp.data.getFirst_name()+" "+temp.data.getLast_name()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Birth Date          : "+temp.data.getBirth_date()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Age                 : "+temp.data.getAge()+" years"+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Height              : "+temp.data.getHeight()+" cm"+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Gender              : "+temp.data.getGender()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Gender Preferences  : "+temp.data.getGender_preference()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Dietary Preferences : "+temp.data.getDietary_choice()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"City                : "+temp.data.getCity()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"State               : "+temp.data.getState()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Bio                 : "+temp.data.getBio()+ConsoleColors.RESET);
+                double compatibility = calculateCompatibility(Session.getCurrentUsername(), temp.data.getUsername()+ConsoleColors.RESET);
+                System.out.println(ConsoleColors.CYAN+"Compatibility Score : " + Math.round(compatibility*100.0)/100.0 + "%"+ConsoleColors.RESET);
                 System.out.println("Compatibility Score : " + Math.round(compatibility * 100.0) / 100.0 + "%");
                 System.out.println();
 
                 while (true) {
-                    System.out.println("Press [O]pen Profile Picture/[S]kip");
+                    System.out.println(ConsoleColors.YELLOW+"Press [O]pen Profile Picture/[S]kip"+ConsoleColors.RESET);
                     String choice = sc.nextLine();
                     if (choice.equalsIgnoreCase("O")) {
                         InputStream fis = temp.data.getImage_stream();
                         if (fis == null) {
-                            System.out.println("No image provided by user");
+                            System.out.println(ConsoleColors.YELLOW+"No image provided by user"+ConsoleColors.RESET);
                             break;
                         } else {
                             File dir = new File("C://profile_images");
@@ -668,28 +672,28 @@ public class MatchDisplay {
                     } else if (choice.equalsIgnoreCase("B")) {
                         return;
                     } else {
-                        System.out.println("Enter valid input!");
+                        System.out.println(ConsoleColors.RED+"Enter valid input!"+ConsoleColors.RESET);
                     }
                 }
 
                 System.out.println();
                 while (true) {
-                    System.out.println("[P]revious/[N]ext/[B]ack/[U]nlike Profile/[D]ownload profile");
+                    System.out.println(ConsoleColors.YELLOW+"[P]revious/[N]ext/[B]ack/[U]nlike Profile/[D]ownload profile"+ConsoleColors.RESET);
 
                     String choice = sc.nextLine();
 
                     if (choice.equalsIgnoreCase("P")) {
                         if(temp.prev==null)
                         {
-                            System.out.println("No Previous User Data!");
+                            System.out.println(ConsoleColors.YELLOW+"No Previous User Data!"+ConsoleColors.RESET);
                             String choice1;
                             try {
-                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+                                choice1= InputUtils.promptUntilValid(ConsoleColors.YELLOW+"Press [B] to go back to filtration page or press [C] to go back to current match profile ?"+ConsoleColors.RESET,s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
                             } catch (RuntimeException e) {
                                 return;
                             }
-                            System.out.println("Back to current match");
+                            System.out.println(ConsoleColors.GREEN+"Back to current match"+ConsoleColors.RESET);
                             break;
                         }
                         else{
@@ -701,15 +705,15 @@ public class MatchDisplay {
                     } else if (choice.equalsIgnoreCase("N")) {
                         if(temp.next==null)
                         {
-                            System.out.println("No Next User Data!");
+                            System.out.println(ConsoleColors.YELLOW+"No Next User Data!"+ConsoleColors.RESET);
                             String choice1;
                             try {
-                                choice1= InputUtils.promptUntilValid("Press [B] to go back to filtration page or press [C] to go back to current match profile ?",s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
+                                choice1= InputUtils.promptUntilValid(ConsoleColors.YELLOW+"Press [B] to go back to filtration page or press [C] to go back to current match profile ?"+ConsoleColors.RESET,s->s.equalsIgnoreCase("B")||s.equalsIgnoreCase("C"),()->new RuntimeException("Blah blah blah"));
 
                             } catch (RuntimeException e) {
                                 return;
                             }
-                            System.out.println("Back to current match");
+                            System.out.println(ConsoleColors.GREEN+"Back to current match"+ConsoleColors.RESET);
                             break;
                         }
                         else{
@@ -731,7 +735,7 @@ public class MatchDisplay {
                     else if (choice.equalsIgnoreCase("B")) {
                         return;
                     } else {
-                        System.out.println("Enter valid input!");
+                        System.out.println(ConsoleColors.RED+"Enter valid input!"+ConsoleColors.RESET);
                     }
                 }
             }
@@ -740,9 +744,9 @@ public class MatchDisplay {
     public int takeAgeRangeInput() throws GoBackException
     {
 
-        int choice= Integer.parseInt(InputUtils.promptUntilValid("Enter age range: \n 1. 21-30 \n 2. 31-40 \n" +
+        int choice= Integer.parseInt(InputUtils.promptUntilValid("Enter age range:"+ConsoleColors.CYAN_BOLD+" +\n 1. 21-30 \n 2. 31-40 \n" +
                 " 3. 41-50 \n 4. 51-60 \n 5. 61-70 \n " +
-                "6. 71-80 \n 7. 81-90 \n 8. 91-100 \n", MatchDisplay::validAgeRange,()->new GoBackException("User chose to Back")));
+                "6. 71-80 \n 7. 81-90 \n 8. 91-100 \n"+ConsoleColors.RESET, MatchDisplay::validAgeRange,()->new GoBackException(ConsoleColors.YELLOW+"User chose to Back"+ConsoleColors.RESET)));
         int startRange=(choice+1)*10+1;
         return startRange;
     }
@@ -795,6 +799,4 @@ public class MatchDisplay {
         }
         return 0;
     }
-
-
 }

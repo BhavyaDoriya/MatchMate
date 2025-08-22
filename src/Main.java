@@ -6,203 +6,189 @@ import match.MatchDisplay;
 import user.Session;
 import user.UpdateUser;
 import user.UserManager;
+import util.ConsoleColors;
 import util.InputUtils;
 import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
-    static Scanner sc=new Scanner(System.in);
+    static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) throws SQLException {
+        System.out.println();
+        System.out.println();
+        System.out.println(ConsoleColors.PURPLE_BOLD + "                                                                     💘 Welcome to MatchMate 💘" + ConsoleColors.RESET);
+
         authAndExitHandler();
     }
-    static void authAndExitHandler()
-    {
-        while (true)
-        {
 
-            System.out.println("\ud83d\udc98 Welcome to MatchMate \ud83d\udc98");
-            System.out.println("1. Register");
-            System.out.println("2. Login");
-            System.out.println("3. Exit");
-            System.out.println("Enter choice:");
+    static void authAndExitHandler() {
+        while (true) {
+
+            System.out.println();
+            System.out.println(ConsoleColors.YELLOW+"NOTE: YOU CAN PRESS 'B' TO GO BACK TO PREVIOUS FEATURES/METHODS ANY TIME!"+ConsoleColors.RESET);
+            System.out.println();
+            System.out.println(ConsoleColors.CYAN_BOLD + "1. Register" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.CYAN_BOLD + "2. Login" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.CYAN_BOLD + "3. Exit" + ConsoleColors.RESET);
+            System.out.print(ConsoleColors.YELLOW_BOLD + "Enter choice: " + ConsoleColors.RESET);
 
             try {
-                int choice= sc.nextInt();
-                switch(choice)
-                {
+                int choice = sc.nextInt();
+                switch (choice) {
                     case 1:
                         try {
                             new UserManager().Register();
-                        }
-                        catch (RegistrationCancelledException e)
-                        {
-                            System.out.println(e.getMessage());
-                        }
-                        catch(SQLException e) {
-                            System.out.println("Connection lost!");
-                            System.out.println("Try again!");
+                        } catch (RegistrationCancelledException e) {
+                            System.out.println();
+                            System.out.println(ConsoleColors.RED + e.getMessage() + ConsoleColors.RESET);
+                        } catch (SQLException e) {
+                            System.out.println();
+                            System.out.println(ConsoleColors.RED + "Connection lost!" + ConsoleColors.RESET);
+                            System.out.println(ConsoleColors.YELLOW + "Try again!" + ConsoleColors.RESET);
                             e.printStackTrace();
                         }
                         break;
+
                     case 2:
-                        boolean loginSuccessful= false;
+                        boolean loginSuccessful = false;
                         try {
                             loginSuccessful = new UserManager().Login();
-                        }catch (LoginCancelledException e)
-                        {
-                            System.out.println(e.getMessage());
-                            System.out.println("Returning to Login/Register page!");
+                        } catch (LoginCancelledException e) {
+                            System.out.println(ConsoleColors.RED + e.getMessage() + ConsoleColors.RESET);
+                            System.out.println(ConsoleColors.YELLOW + "Returning to Login/Register page!" + ConsoleColors.RESET);
+                        } catch (SQLException e) {
+                            System.out.println(ConsoleColors.RED + "Connection lost!" + ConsoleColors.RESET);
+                            System.out.println(ConsoleColors.YELLOW + "Try again!" + ConsoleColors.RESET);
+                            System.out.println(ConsoleColors.YELLOW + "Returning to Login/Register page!" + ConsoleColors.RESET);
                         }
-                        catch (SQLException e) {
-                            System.out.println("Connection lost!");
-                            System.out.println("Try again!");
-                            System.out.println("Returning to Login/Register page!");
-                        }
-                        if(loginSuccessful)
-                        {
+                        if (loginSuccessful) {
                             HomePage();
                         }
                         break;
+
                     case 3:
-                        System.out.println("Exiting MatchMate!");
+                        System.out.println(ConsoleColors.GREEN_BOLD + "Exiting MatchMate!" + ConsoleColors.RESET);
                         return;
+
                     default:
-                        System.out.println("Invalid choice try again!");
+                        System.out.println(ConsoleColors.RED + "Invalid choice, try again!" + ConsoleColors.RESET);
                         break;
                 }
-            }catch (InputMismatchException e)
-            {
-                System.out.println("Please Enter Integer Value only!");
-                sc.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println(ConsoleColors.RED + "Please Enter Integer Value only!" + ConsoleColors.RESET);
+                sc.nextLine(); // clear buffer
             }
         }
-
     }
+
     static void HomePage() {
         while (true) {
             System.out.println();
-            System.out.println("1. Edit Profile");
-            System.out.println("2. Find Matches");
-            System.out.println("3. View Shortlisted Profiles");
-            System.out.println("4. View Mutual Likes");
-            System.out.println("5. View People Who Liked You");
-            System.out.println("6. Download profile document");
-            System.out.println("7. Delete account");
-            System.out.println("8. Log out");
+            System.out.println(ConsoleColors.CYAN_BOLD + "1. Edit Profile" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.CYAN_BOLD + "2. Find Matches" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.CYAN_BOLD + "3. View Shortlisted Profiles" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.CYAN_BOLD + "4. View Mutual Likes" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.CYAN_BOLD + "5. View People Who Liked You" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.CYAN_BOLD + "6. Download Profile Document" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.CYAN_BOLD + "7. Delete Account" + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.CYAN_BOLD + "8. Log out" + ConsoleColors.RESET);
+            System.out.print(ConsoleColors.YELLOW_BOLD + "Enter choice: " + ConsoleColors.RESET);
+
             try {
                 int choice = sc.nextInt();
                 switch (choice) {
                     case 1:
                         UpdateUser.editProfile();
                         break;
+
                     case 2:
                         do {
                             try {
                                 new MatchDisplay().displayMatches();
                             } catch (GoBackException e) {
-
+                                // go back safely
                             } catch (RuntimeException e) {
                                 break;
                             }
-
-                        }while(true);
+                        } while (true);
                         break;
+
                     case 3:
                         do {
                             try {
                                 new MatchDisplay().displayShortlisted();
                             } catch (GoBackException e) {
-
                             } catch (RuntimeException e) {
                                 break;
                             }
-                        }while (true);
+                        } while (true);
                         break;
+
                     case 4:
-                        do{
-                        try {
-                            new MatchDisplay().displayMutualLikes();
-                        } catch (GoBackException e) {
-
-                        } catch (RuntimeException e) {
-                            break;
-                        }
-                        }
-                        while (true);
+                        do {
+                            try {
+                                new MatchDisplay().displayMutualLikes();
+                            } catch (GoBackException e) {
+                            } catch (RuntimeException e) {
+                                break;
+                            }
+                        } while (true);
                         break;
-                    case 5:
-                        do{
-                        try {
-                            new MatchDisplay().displayWhoLikedMe();
-                        } catch (GoBackException e) {
 
-                        } catch (RuntimeException e) {
-                            break;
-                        }
-                        }
-                        while (true);
+                    case 5:
+                        do {
+                            try {
+                                new MatchDisplay().displayWhoLikedMe();
+                            } catch (GoBackException e) {
+                            } catch (RuntimeException e) {
+                                break;
+                            }
+                        } while (true);
                         break;
 
                     case 6:
-                        //Download profile document
-                        new UserManager().generateUserProfile(Session.getCurrentUserObject(),true);
+                        new UserManager().generateUserProfile(Session.getCurrentUserObject(), true);
                         break;
+
                     case 7:
-                        sc.nextLine();
+                        sc.nextLine(); // clear buffer
                         try {
-                            String choiceYesNo = InputUtils.promptUntilValid("Are you sure that you want to delete your account?(Yes/B(for No)) ",
+                            String choiceYesNo = InputUtils.promptUntilValid(
+                                    ConsoleColors.RED+"Are you sure you want to delete your account? (Yes / B for No): "+ConsoleColors.RESET,
                                     s -> s.equalsIgnoreCase("yes"),
-                                    () -> new DeletionCancelledException("Deletion Cancelled by User"));
+                                    () -> new DeletionCancelledException("Deletion Cancelled by User")
+                            );
                             new UserManager().deleteAccount();
-                            System.out.println("Account deleted successfully!");
-                            System.out.println("User logged out of account!");
-                            System.out.println("Back to Login/Register page : ");
+                            System.out.println(ConsoleColors.GREEN_BOLD + "Account deleted successfully!" + ConsoleColors.RESET);
+                            System.out.println(ConsoleColors.GREEN + "User logged out. Back to Login/Register page." + ConsoleColors.RESET);
                             return;
                         } catch (DeletionCancelledException e) {
-                            System.out.println(e.getMessage());
-
+                            System.out.println(ConsoleColors.RED + e.getMessage() + ConsoleColors.RESET);
                         } catch (SQLException e) {
-                            System.out.println("Connection lost!");
-                            System.out.println("Try again!");
+                            System.out.println(ConsoleColors.RED_BOLD + "Connection lost!" + ConsoleColors.RESET);
                             e.printStackTrace();
-                            System.out.println("Returning to Home Page!");
+                            System.out.println(ConsoleColors.GREEN + "Returning to Home Page!" + ConsoleColors.RESET);
                             return;
                         }
                         break;
+
                     case 8:
                         Session.setCurrentUsername(null);
                         Session.setCurrentUserObject(null);
-                        System.out.println("Logged out successfully");
-                        System.out.println("Back to Login/Register page !");
+                        System.out.println(ConsoleColors.GREEN_BOLD + "Logged out successfully." + ConsoleColors.RESET);
+                        System.out.println(ConsoleColors.GREEN_BOLD + "Back to Login/Register page!" + ConsoleColors.RESET);
                         return;
+
                     default:
-                        System.out.println("Invalid choice! Try again!");
+                        System.out.println(ConsoleColors.RED_BOLD + "Invalid choice! Try again!" + ConsoleColors.RESET);
                         break;
                 }
             } catch (InputMismatchException e) {
-                System.out.println("Please Enter Integer Value only!");
+                System.out.println(ConsoleColors.RED_BOLD + "Please Enter Integer Value only!" + ConsoleColors.RESET);
                 sc.nextLine();
-                }
             }
         }
     }
-
-
-
-
-
-//C:\Users\BHAVYA\Downloads\Anupammittal.jpg
-
-//he OTP sent to your email/Press [B] to re-enter you email: com.sun.mail.smtp.SMTPSendFailedException: [EOF]
-//	at com.sun.mail.smtp.SMTPTransport.issueSendCommand(SMTPTransport.java:2374)
-//	at com.sun.mail.smtp.SMTPTransport.mailFrom(SMTPTransport.java:1808)
-//	at com.sun.mail.smtp.SMTPTransport.sendMessage(SMTPTransport.java:1285)
-//	at jakarta.mail.Transport.send0(Transport.java:231)
-//	at jakarta.mail.Transport.send(Transport.java:100)
-//	at util.EmailUtil.sendMail(EmailUtil.java:41)
-//	at util.EmailUtil.forgotUsername(EmailUtil.java:66)
-//	at user.UserManager.Login(UserManager.java:279)
-//	at Main.authAndExitHandler(Main.java:50)
-//	at Main.main(Main.java:18)
+}

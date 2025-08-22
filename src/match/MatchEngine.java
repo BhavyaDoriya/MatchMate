@@ -1,6 +1,7 @@
 package match;
 import ds.CustomLinkedList;
 import user.*;
+import util.ConsoleColors;
 import util.DatabaseConnector;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,7 +51,7 @@ public class MatchEngine {
 
             }catch (SQLException e)
             {
-                System.out.println("Connection lost!");
+                System.out.println(ConsoleColors.RED+"Connection lost!"+ConsoleColors.RESET);
             }
         }
     public void findMatchesByAge(int startRangeOfAge)
@@ -78,7 +79,7 @@ public class MatchEngine {
 
         }catch (SQLException e)
         {
-            System.out.println("Connection lost!");
+            System.out.println(ConsoleColors.RED+"Connection lost!"+ConsoleColors.RESET);
         }
     }
     public void findMatchesByCity(String city)
@@ -105,7 +106,7 @@ public class MatchEngine {
 
         }catch (SQLException e)
         {
-            System.out.println("Connection lost!");
+            System.out.println(ConsoleColors.RED+"Connection lost!"+ConsoleColors.RESET);
         }
     }
     public void findMatchesByCityANDAge(int startRangeOfAge,String city)
@@ -134,7 +135,7 @@ public class MatchEngine {
 
         }catch (SQLException e)
         {
-            System.out.println("Connection lost!");
+            System.out.println(ConsoleColors.RED+"Connection lost!"+ConsoleColors.RESET);
         }
     }
     public void shortListedProfile()
@@ -156,7 +157,7 @@ public class MatchEngine {
                 likedByUser.insertAtLast(Session.getUserObject(likerName));
             }
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching liked users!");
+            System.out.println(ConsoleColors.RED+"Connection lost while fetching liked users!"+ConsoleColors.RESET);
         }
     }
     public void shortListedProfileSortedByAge(int startRangeOfAge)
@@ -180,7 +181,7 @@ public class MatchEngine {
                 likedByUserSortedByAge.insertAtLast(Session.getUserObject(likerName));
             }
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching liked users!");
+            System.out.println(ConsoleColors.RED+"Connection lost while fetching liked users!"+ConsoleColors.RESET);
         }
 
     }
@@ -204,7 +205,7 @@ public class MatchEngine {
                 likedByUserSortedByCity.insertAtLast(Session.getUserObject(likerName));
             }
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching liked users!");
+            System.out.println(ConsoleColors.RED+"Connection lost while fetching liked users!"+ConsoleColors.RESET);
         }
 
     }
@@ -230,7 +231,7 @@ public class MatchEngine {
                 likedByUserSortedByCityANDAge.insertAtLast(Session.getUserObject(likerName));
             }
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching liked users!");
+            System.out.println(ConsoleColors.RED+"Connection lost while fetching liked users!"+ConsoleColors.RESET);
         }
     }
     public void findMutualLikes() {
@@ -253,7 +254,7 @@ public class MatchEngine {
 
             }
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching mutual likes!");
+            System.out.println(ConsoleColors.RED+"Connection lost while fetching mutual likes!"+ConsoleColors.RESET);
         }
     }
     public void findMutualLikesSortedByAge(int startRangeOfAge)
@@ -279,7 +280,7 @@ public class MatchEngine {
 
             }
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching mutual likes!");
+            System.out.println(ConsoleColors.RED+"Connection lost while fetching mutual likes!"+ConsoleColors.RESET);
         }
     }
     public void findMutualLikesSortedByCity(String city)
@@ -304,7 +305,8 @@ public class MatchEngine {
 
             }
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching mutual likes!");
+            System.out.println(ConsoleColors.RED+"Connection lost while fetching mutual likes!"+ConsoleColors.RESET);
+
         }
     }
     public void findMutualLikesSortedByCityANDAge(int startRangeOfAge,String city)
@@ -331,7 +333,7 @@ public class MatchEngine {
 
             }
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching mutual likes!");
+            System.out.println(ConsoleColors.RED+"Connection lost while fetching mutual likes!"+ConsoleColors.RESET);
         }
     }
     public void findUsersWhoLikedMe() {
@@ -353,7 +355,7 @@ public class MatchEngine {
             }
 
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching users who liked you!");
+            System.out.println(ConsoleColors.RED +"Connection lost while fetching users who liked you!"+ConsoleColors.RESET);
         }
     }
     public void findUsersWhoLikedMeSortedByAge(int startRangeOfAge)
@@ -378,7 +380,7 @@ public class MatchEngine {
             }
 
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching users who liked you!");
+            System.out.println(ConsoleColors.RED +"Connection lost while fetching users who liked you!"+ConsoleColors.RESET);
         }
     }
     public void findUsersWhoLikedMeSortedByCity(String city)
@@ -404,7 +406,7 @@ public class MatchEngine {
             }
 
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching users who liked you!");
+            System.out.println(ConsoleColors.RED +"Connection lost while fetching users who liked you!"+ConsoleColors.RESET);
         }
     }
     public void findUsersWhoLikedMeSortedByCityANDAge(int startRangeOfAge,String city)
@@ -431,7 +433,7 @@ public class MatchEngine {
             }
 
         } catch (SQLException e) {
-            System.out.println("Connection lost while fetching users who liked you!");
+            System.out.println(ConsoleColors.RED +"Connection lost while fetching users who liked you!"+ConsoleColors.RESET);
         }
     }
     public void removeUserFromAllLists(String username) {

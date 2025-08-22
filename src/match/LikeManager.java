@@ -2,6 +2,7 @@ package match;
 
 import user.Session;
 import user.User;
+import util.ConsoleColors;
 import util.DatabaseConnector;
 import util.EmailUtil;
 
@@ -19,10 +20,10 @@ public class LikeManager {
             pst.setString(2, liked_username);
             pst.executeUpdate();
 
-            System.out.println("Profile liked successfully!");
+            System.out.println(ConsoleColors.GREEN+"Profile liked successfully!"+ConsoleColors.RESET);
 
             User likedUser = Session.getUserObject(liked_username);
-                System.out.println("Sending Like notification to: " + likedUser.getFirst_name());
+                System.out.println(ConsoleColors.GREEN+"Sending Like notification to: " + likedUser.getFirst_name()+ConsoleColors.RESET);
                 EmailUtil.sendMail(
                         likedUser.getEmail(),
                         "You got a new Like! ❤️",
@@ -31,9 +32,9 @@ public class LikeManager {
                                 + " liked your profile!"
                 );
         } catch (SQLIntegrityConstraintViolationException e) {
-            System.out.println("You have already liked this profile.");
+            System.out.println(ConsoleColors.YELLOW+"You have already liked this profile."+ConsoleColors.RESET);
         } catch (SQLException e) {
-            System.out.println("Database error/Connection stopped: " + e.getMessage());
+            System.out.println(ConsoleColors.RED+"Database error/Connection stopped: " + e.getMessage()+ConsoleColors.RESET);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,12 +48,12 @@ public class LikeManager {
             pst.setString(2, unlikedUsername);
             int rows = pst.executeUpdate();
             if (rows > 0) {
-                System.out.println("Profile unliked successfully!");
+                System.out.println(ConsoleColors.GREEN+"Profile unliked successfully!"+ConsoleColors.RESET);
             } else {
-                System.out.println("You had not liked this profile before.");
+                System.out.println(ConsoleColors.YELLOW+"You had not liked this profile before."+ConsoleColors.RESET);
             }
         } catch (SQLException e) {
-            System.out.println("Database error while unliking profile: " + e.getMessage());
+            System.out.println(ConsoleColors.RED+"Database error while unliking profile: " + e.getMessage()+ConsoleColors.RESET);
         }
 
     }

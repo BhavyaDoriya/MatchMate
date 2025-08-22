@@ -23,7 +23,7 @@ public class InputUtils {
             if (validator.test(input)) {
                 return input;
             }
-            System.out.println("Invalid input. Try again or 'B' to go back.");
+            System.out.println(ConsoleColors.RED+"Invalid input. Try again or 'B' to go back."+ConsoleColors.RESET);
         }
     }
 
@@ -59,7 +59,7 @@ public class InputUtils {
                     return v;
                 }
             } catch (NumberFormatException ignored) {}
-            System.out.println("Invalid number. Try again or 'B' to go back.");
+            System.out.println(ConsoleColors.RED+"Invalid number. Try again or 'B' to go back."+ConsoleColors.RESET);
         }
     }
 }

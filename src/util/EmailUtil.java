@@ -37,19 +37,19 @@ public class EmailUtil {
             message.setText(body);
 
             Transport.send(message);
-            System.out.println("Email sent successfully to " + recipient);
+            System.out.println(ConsoleColors.GREEN+"Email sent successfully  " +ConsoleColors.RESET);
             return true;
         } catch (MessagingException e) {
-            System.out.println("Failed to send OTP to email. Try again later.");
+            System.out.println(ConsoleColors.RED+"Failed to send email. Try again later."+ConsoleColors.RESET);
 
-            System.out.println("Please enter valid email!");
+            System.out.println(ConsoleColors.RED+"Please enter valid email!"+ConsoleColors.RESET);
             return false;
         }
     }
     public void forgotUsername() throws GoBackException {
         while (true) {
             String email = InputUtils.promptUntilValid("Enter your registered email: ",
-                    s->s.contains("@"), () -> new GoBackException("User chose to go back from forgot username!"));
+                    s->s.contains("@"), () -> new GoBackException(ConsoleColors.RED+"User chose to go back from forgot username!"+ConsoleColors.RESET));
 
             try {
                 PreparedStatement ps = DatabaseConnector.getConnection()
@@ -63,29 +63,29 @@ public class EmailUtil {
 
                     String otp = OTPGenerator.generateOTP(6);
                     String body = "Hi " + first + ",\n\nYour OTP to recover your username is: " + otp;
-                    System.out.println("Sending OTP to your email...");
+                    System.out.println(ConsoleColors.GREEN+"Sending OTP to your email..."+ConsoleColors.RESET);
                     EmailUtil.sendMail(email, "Forgot Username - MatchMate", body);
-                    System.out.println("Sent!");
+
                     try {
                         String enteredOtp = InputUtils.promptUntilValid(
                                 "Enter the OTP sent to your email/Press [B] to re-enter you email: ",
                                 s -> s.equals(otp),
-                                () -> new GoBackException("User chose to re enter his email!")
+                                () -> new GoBackException(ConsoleColors.YELLOW+"User chose to re enter his email!"+ConsoleColors.RESET)
                         );
                     }catch (GoBackException e)
                     {
                         System.out.println(e.getMessage());
                         continue;
                     }
-                    System.out.println("Sending username to your email...");
+                    System.out.println(ConsoleColors.GREEN+"Sending username to your email..."+ConsoleColors.RESET);
                     String msg = "Hi " + first + ",\n\nYour MatchMate username is: " + username;
                     EmailUtil.sendMail(email, "Your MatchMate Username", msg);
-                    System.out.println("Your username has been sent to your email!");
+
                     return;
 
                 } else {
-                    System.out.println(" No account found with that email.");
-                    System.out.println("Try again! or Enter B to go back!");
+                    System.out.println(ConsoleColors.RED+" No account found with that email."+ConsoleColors.RESET);
+                    System.out.println(ConsoleColors.RED+"Try again! or Enter B to go back!"+ConsoleColors.RESET);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -96,12 +96,12 @@ public class EmailUtil {
         while (true) {
             String username = InputUtils.promptUntilValid("Enter your username: ",
                     s -> !s.isEmpty(),
-                    () -> new GoBackException("User chose to go back from forget password option"));
+                    () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back from forget password option"+ConsoleColors.RESET));
             String email="";
             do {
                 try {
                     email = InputUtils.promptUntilValid("Enter your registered email/Press [B] to re-enter username: ",
-                            s -> !s.isEmpty(), () -> new GoBackException("User chose to re-enter username!"));
+                            s -> !s.isEmpty(), () -> new GoBackException(ConsoleColors.YELLOW+"User chose to re-enter username!"+ConsoleColors.RESET));
                 } catch (GoBackException e) {
                     System.out.println(e.getMessage());
                     break;
@@ -115,22 +115,22 @@ public class EmailUtil {
                     ResultSet rs = ps.executeQuery();
 
                     if (rs.next()) {
-                        System.out.println("Sending OTP to your email...");
+                        System.out.println(ConsoleColors.GREEN+"Sending OTP to your email..."+ConsoleColors.RESET);
                         String first = rs.getString("first_name");
                         String otp = OTPGenerator.generateOTP(6);
                         String body = "Hi " + first + ",\n\nYour OTP to reset your password is: " + otp;
                         EmailUtil.sendMail(email, "Forgot Password - MatchMate", body);
-                        System.out.println("Sent!");
+
                         try {
                             String enteredOtp = InputUtils.promptUntilValid("EnterOTP sent to  the your email/Press [B] to re-enter registered email: ",
                                     s -> s.equalsIgnoreCase(otp),
-                                    () -> new GoBackException("User chose to re-enter Email!"));
+                                    () -> new GoBackException(ConsoleColors.YELLOW+"User chose to re-enter Email!"+ConsoleColors.RESET));
                         } catch (GoBackException e) {
                             System.out.println(e.getMessage());
                             continue;
                         }
 
-                        String newPass = InputUtils.promptUntilValid("Enter your new password: ", UserManager::verifyPassword, () -> new GoBackException("User chose to go back from forgot password option!"));
+                        String newPass = InputUtils.promptUntilValid("Enter your new password: ", UserManager::verifyPassword, () -> new GoBackException(ConsoleColors.YELLOW+"User chose to go back from forgot password option!"+ConsoleColors.RESET));
 
                         PreparedStatement ps2 = DatabaseConnector.getConnection()
                                 .prepareStatement("UPDATE users SET password = ? WHERE username = ?");
@@ -138,11 +138,11 @@ public class EmailUtil {
                         ps2.setString(2, username);
                         ps2.executeUpdate();
 
-                        System.out.println("Password reset successful!");
+                        System.out.println(ConsoleColors.GREEN+"Password reset successful!"+ConsoleColors.RESET);
                         return;
                     } else {
-                        System.out.println("No matching account found.");
-                        System.out.println("Try again! or Enter B to go back!");
+                        System.out.println(ConsoleColors.RED+"No matching account found."+ConsoleColors.RESET);
+                        System.out.println(ConsoleColors.RED+"Try again! or Enter B to go back!"+ConsoleColors.RESET);
                     }
                 } catch (SQLException e) {
                     e.printStackTrace();

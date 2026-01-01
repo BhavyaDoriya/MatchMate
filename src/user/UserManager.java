@@ -17,6 +17,7 @@ public class UserManager {
 
     public void Register() throws RegistrationCancelledException, SQLException {
         System.out.println();
+        System.out.println();
         String first = InputUtils.promptUntilValid(
                 "Enter first name: ",
                 s -> !s.isEmpty(),

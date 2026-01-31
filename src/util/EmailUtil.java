@@ -11,8 +11,8 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class EmailUtil {
-    private static final String senderEmail = "matchmatePlatformHelp@gmail.com";
-    private static final String senderPassword = "myswjlfzzdfmiora";
+    private static final String senderEmail = "YOUR_EMAIL_ID";
+    private static final String senderPassword = "YOUR_APP_PASSWORD";
     private static Session getSession() {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");

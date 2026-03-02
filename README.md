@@ -63,9 +63,9 @@ Navigate to `src/Main.java` and run the file to start the console application.
 
 ## 👥 Team & Contributions
 This project was collaboratively built by:
-* **Bhavya Doriya:** Project architecture, Database Design & Integration (JDBC/MySQL), Matchmaking Engine logic, and robust input validations in user registration.
-* **Akshita:** `EmailUtils` integration (Jakarta Mail), OTP generation, user input field strategy, login, forgot password and Matches View UI/logic.
-* **Mahek:** Implementation of Custom Exception Handling and customized `LinkedList` Data Structure integration.
+* **[Bhavya Doriya](https://github.com/BhavyaDoriya):** Project architecture, Database Design & Integration (JDBC/MySQL), Matchmaking Engine logic, and robust input validations in user registration.
+* **[Akshita](https://github.com/cuteDebugger):** `EmailUtils` integration (Jakarta Mail), OTP generation, user input field strategy, login, forgot password and Matches View UI/logic.
+* **[Mahek](https://github.com/maheksky):** Implementation of Custom Exception Handling and customized `LinkedList` Data Structure integration.
 
 ---
 

@@ -70,5 +70,4 @@ This project was collaboratively built by:
 ---
 
 ## 📄 License & Ownership
-## 📄 License & Ownership
 This is an academic group project created for educational purposes. It is open-source and available under the MIT License. See the [LICENSE](LICENSE) file for more details. Copyright © 2025 Bhavya Doriya, Akshita, and Mahek.

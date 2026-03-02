@@ -9,10 +9,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
+import static util.DatabaseConnector.dotenv;
 
 public class EmailUtil {
-    private static final String senderEmail = "YOUR_EMAIL_ID";
-    private static final String senderPassword = "YOUR_APP_PASSWORD";
+
+    private static final String senderEmail = dotenv.get("SENDER_EMAIL");
+    private static final String senderPassword =dotenv.get("APP_PASSWORD");
     private static Session getSession() {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
